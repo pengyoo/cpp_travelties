@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.views.generic import TemplateView, CreateView, ListView
+from django.views.generic import TemplateView, CreateView, ListView, DetailView
 from django_filters.views import FilterView
 from django.urls import reverse_lazy
 
@@ -34,6 +34,12 @@ class PostListView(ListView):
     model = models.Post
     context_object_name = "posts"
     paginate_by = 10
+
+
+class PostDetailView(DetailView):
+    template_name = "post.html"
+    model = models.Post
+    context_object_name = "post"
 
 
 # Destination List View

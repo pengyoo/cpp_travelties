@@ -49,6 +49,7 @@ class FollowingRelation(models.Model):
 class Post(models.Model):
     user = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
+    summary = models.CharField(max_length=255)
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
