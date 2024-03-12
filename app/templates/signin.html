@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block style %}
+    .form-signin {
+    max-width: 400px;
+    padding: 1rem;
+    }
+    .form-signin .form-floating:focus-within {
+    z-index: 2;
+    }
+    .form-signin input[type="email"] {
+    margin-bottom: -1px;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+    }
+    .form-signin input[type="password"] {
+    margin-bottom: 10px;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    }
+{% endblock style %}
+{% block main %}
+    <main class="card p-4 form-signin w-100 m-auto mt-5">
+        <form method="post">
+            {% csrf_token %}
+            <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger pt-2 p-0" role="alert">{{ form.non_field_errors }}</div>
+            {% endif %}
+            <div class="form-floating">
+                <input type="text"
+                       name="username"
+                       class="form-control"
+                       id="username"
+                       value="{% if form.username.value %}{{ form.username.value }}{% endif %}"
+                       placeHolder="Username">
+                <label for="username">Username</label>
+                {% if form.username.errors %}<div class="text-danger" role="alert">{{ form.username.errors }}</div>{% endif %}
+            </div>
+            <div class="form-floating mt-3">
+                <input type="password"
+                       name="password"
+                       class="form-control"
+                       id="password"
+                       placeHolder="Password">
+                <label for="password">Password</label>
+                {% if form.password.errors %}<div class="text-danger" role="alert">{{ form.password.errors }}</div>{% endif %}
+            </div>
+            <button class="btn btn-primary w-100 py-2"
+                    style="color: #ffffff"
+                    type="submit">Sign In</button>
+        </form>
+    </main>
+{% endblock main %}

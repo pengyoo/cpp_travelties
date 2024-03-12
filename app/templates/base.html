@@ -1,0 +1,236 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bootstrap demo</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.3/dist/sketchy/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@docsearch/css@3">
+  <style>
+    body {
+      background-color: #eeeeee;
+    }
+
+    #editor-container {
+      height: 25rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #editor {
+      height: 25rem;
+      flex: 1;
+      overflow-y: auto;
+      width: 100%;
+    }
+
+    {% block style %}
+    {% endblock style%}
+  </style>
+  <link href="https://cdn.jsdelivr.net/npm/quill@2.0.0-rc.2/dist/quill.snow.css" rel="stylesheet" />
+
+</head>
+
+<body>
+  <header class="p-2 mb-3 bg-primary" data-bs-theme="dark">
+    <div class="container">
+        <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+            <a class="navbar-brand" href="#" style="color: #ffffff">
+                <img height="30" src="{% static 'app/images/logo.png' %}" /> 
+            </a>
+            <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+                <li>
+                    <a href="/" class="nav-link active link-body-emphasis">Home</a>
+                </li>
+                <li>
+                    <a href="/posts=5" class="nav-link px-2 link-body-emphasis">Journals</a>
+                </li>
+                <li>
+                    <a href="/destinations" class="nav-link px-2 link-body-emphasis">Destinations</a>
+                </li>
+            </ul>
+            <form method="get"
+                  class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3"
+                  role="search">
+                <input type="search"
+                       name="address__contains"
+                       class="form-control"
+                       placeholder="Search by address..."
+                       aria-label="Search">
+            </form>
+            {% if not user.is_authenticated %}
+                <button class="btn btn-secondary">
+                    <a class="nav-link" href="{% url 'signin' %}">Sign In</a>
+                </button>
+                <button class="btn btn-light ms-2">
+                    <a class="nav-link" href="{% url 'signup' %}">Sign Up</a>
+                </button>
+            {% elif user.is_authenticated %}
+                <div class="dropdown text-end">
+                    <a href="#"
+                       class="d-block link-body-emphasis text-decoration-none dropdown-toggle"
+                       data-bs-toggle="dropdown"
+                       aria-expanded="false">
+                        {% if user.profile.avatar_url %}
+                            <img src="{{ user.profile.avatar_url }}"
+                                 alt="mdo"
+                                 width="32"
+                                 height="32"
+                                 class="rounded-circle" />
+                        {% elif not user.profile.avatar_url %}
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                 width="32"
+                                 height="32"
+                                 fill="currentColor"
+                                 class="bi bi-person-circle"
+                                 viewBox="0 0 16 16">
+                                <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0" />
+                                <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1" />
+                            </svg>
+                        {% endif %}
+                    </a>
+                    <ul class="dropdown-menu text-small">
+                        <li class="px-3">Welcome, {{ user.username }}</li>
+                        <li>
+                            <hr class="dropdown-divider" />
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="/?user={{ user.id }}">I Published Properties</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="/?landlord__id={{ user.id }}">My Owned Properties</a>
+                        </li>
+                        <li>
+                            <hr class="dropdown-divider" />
+                        </li>
+                        <li>
+                            <a class="dropdown-item"
+                               href="#"
+                               onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Sign out</a>
+                        </li>
+                    </ul>
+                    <form id="logout-form"
+                          method="post"
+                          action="{% url 'signout' %}"
+                          style="display: none">
+                        {% csrf_token %}
+                    </form>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</header>
+
+
+
+  {% block main %}
+
+  {% endblock main%}
+
+  <footer class="text-center mt-2 mb-2">
+    &copy;Travel Journals
+  </footer>
+
+
+
+  <!-- Modal -->
+  <div class="modal fade" id="postModal" tabindex="-1" aria-labelledby="postModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="postModalLabel">Share your travel journal...</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="input-group mb-3">
+            <input type="text" class="form-control" placeholder="Title" aria-label="title" aria-describedby="title">
+          </div>
+
+          <div id="editor"></div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary">Submit</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+    crossorigin="anonymous"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/quill@2.0.0-rc.2/dist/quill.js"></script>
+
+  <!-- Initialize Quill editor -->
+  <script>
+    const toolbarOptions = [
+      ['bold', 'italic', 'underline', 'strike'],
+      ['blockquote', 'code-block'],
+      ['link', 'image'],
+      [{ 'list': 'ordered' }, { 'list': 'bullet' }, { 'list': 'check' }],
+      [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+
+      [{ 'color': [] }, { 'background': [] }],
+      [{ 'align': [] }],
+    ];
+
+    const imgHandler = (value) => {
+      console.log(value)
+    }
+
+    const quill = new Quill('#editor', {
+      theme: 'snow',
+      modules: {
+        toolbar: toolbarOptions
+      }
+    });
+
+    function selectLocalImage() {
+      const input = document.createElement('input');
+      input.setAttribute('type', 'file');
+      input.setAttribute('accept', 'image/png, image/gif, image/jpeg')
+      input.click();
+
+      input.onchange = () => {
+        const file = input.files[0];
+        if (/^image\//.test(file.type)) {
+          upload(file);
+        } else {
+          console.warn('You could only upload images.');
+        }
+      };
+    }
+
+    function upload(file) {
+      const fd = new FormData();
+      fd.append('image', file);
+
+      const xhr = new XMLHttpRequest();
+      xhr.open('POST', 'http://localhost:3000/upload/image', true);
+      xhr.onload = () => {
+        if (xhr.status === 200) {
+          const url = JSON.parse(xhr.responseText).data;
+          addImageToEditor(url);
+        }
+      };
+      xhr.send(fd);
+    }
+
+    function addImageToEditor(url) {
+      const range = editor.getSelection();
+      editor.insertEmbed(range.index, 'image', `http://localhost:9000${url}`);
+    }
+    quill.getModule('toolbar').addHandler('image', () => {
+      selectLocalImage();
+    });
+
+
+  </script>
+</body>
+
+</html>
