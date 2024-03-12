@@ -1,4 +1,18 @@
 {% extends "base.html" %}
+{% block style %}
+  #editor-container {
+  height: 25rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  }
+  #editor {
+  height: 25rem;
+  flex: 1;
+  overflow-y: auto;
+  width: 100%;
+  }
+{% endblock style %}
 {% block main %}
   <div class="container mt-3">
     <div class="row">
@@ -183,6 +197,41 @@
             </div>
           </div>
         {% endfor %}
+        <div class="d-flex justify-content-end mt-3">
+          <div class="float-right">
+            <ul class="pagination pagination-md">
+              {% if page_obj.has_previous %}
+                <li class="page-item">
+                  <a class="page-link" href="?page={{ page_obj.previous_page_number }}">&laquo;</a>
+                </li>
+              {% elif not page_obj.has_previous %}
+                <li class="page-item disabled">
+                  <a class="page-link" href="#">&laquo;</a>
+                </li>
+              {% endif %}
+              {% for page in page_obj.paginator.page_range %}
+                {% if page == page_obj.number %}
+                  <li class="page-item active">
+                    <a class="page-link" href="?page={{ page }}">{{ page }}</a>
+                  </li>
+                {% elif page != page_obj.number %}
+                  <li class="page-item">
+                    <a class="page-link" href="?page={{ page }}">{{ page }}</a>
+                  </li>
+                {% endif %}
+              {% endfor %}
+              {% if page_obj.has_next %}
+                <li class="page-item">
+                  <a class="page-link" href="?page={{ page_obj.next_page_number }}">&raquo;</a>
+                </li>
+              {% elif not page_obj.has_next %}
+                <li class="page-item disabled">
+                  <a class="page-link" href="#">&raquo;</a>
+                </li>
+              {% endif %}
+            </ul>
+          </div>
+        </div>
       </div>
       <div class="col-lg-3">
         <div class="card ps-3 pe-3 pt-2" style="border: none; border-radius: 0%;">
@@ -233,3 +282,71 @@
     </div>
   </div>
 {% endblock main %}
+{% block script %}
+  <script src="https://cdn.jsdelivr.net/npm/quill@2.0.0-rc.2/dist/quill.js"></script>
+  <!-- Initialize Quill editor -->
+  <script>
+    const toolbarOptions = [
+      ['bold', 'italic', 'underline', 'strike'],
+      ['blockquote', 'code-block'],
+      ['link', 'image'],
+      [{ 'list': 'ordered' }, { 'list': 'bullet' }, { 'list': 'check' }],
+      [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+
+      [{ 'color': [] }, { 'background': [] }],
+      [{ 'align': [] }],
+    ];
+
+    const imgHandler = (value) => {
+      console.log(value)
+    }
+
+    const quill = new Quill('#editor', {
+      theme: 'snow',
+      modules: {
+        toolbar: toolbarOptions
+      }
+    });
+
+    function selectLocalImage() {
+      const input = document.createElement('input');
+      input.setAttribute('type', 'file');
+      input.setAttribute('accept', 'image/png, image/gif, image/jpeg')
+      input.click();
+
+      input.onchange = () => {
+        const file = input.files[0];
+        if (/^image\//.test(file.type)) {
+          upload(file);
+        } else {
+          console.warn('You could only upload images.');
+        }
+      };
+    }
+
+    function upload(file) {
+      const fd = new FormData();
+      fd.append('image', file);
+
+      const xhr = new XMLHttpRequest();
+      xhr.open('POST', 'http://localhost:3000/upload/image', true);
+      xhr.onload = () => {
+        if (xhr.status === 200) {
+          const url = JSON.parse(xhr.responseText).data;
+          addImageToEditor(url);
+        }
+      };
+      xhr.send(fd);
+    }
+
+    function addImageToEditor(url) {
+      const range = editor.getSelection();
+      editor.insertEmbed(range.index, 'image', `http://localhost:9000${url}`);
+    }
+    quill.getModule('toolbar').addHandler('image', () => {
+      selectLocalImage();
+    });
+
+
+  </script>
+{% endblock script %}

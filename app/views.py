@@ -26,5 +26,8 @@ class HomeView(ListView):
     queryset = models.Post.objects.select_related("user").all()
 
 
-class JournalListView(TemplateView):
-    template_name = "journals.html"
+class PostListView(ListView):
+    template_name = "posts.html"
+    model = models.Post
+    context_object_name = "posts"
+    paginate_by = 2
