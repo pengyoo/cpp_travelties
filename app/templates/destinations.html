@@ -1,188 +1,132 @@
 {% extends "base.html" %}
-
-{% block main%}
-
+{% block main %}
     <main>
         <div class="container mt-3">
             <div class="dropdown">
-                <button class="btn btn-light dropdown-toggle" style="border: #eeeeee; border-radius: 0%;" type="button"
-                    data-bs-toggle="dropdown" aria-expanded="false">
-                    Dropdown
-                </button>
+                <button class="btn btn-light dropdown-toggle"
+                        style="border: #eeeeee;
+                               border-radius: 0%"
+                        type="button"
+                        id="continent_dropdown"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false">Continent</button>
                 <ul class="dropdown-menu">
-                    <li><button class="dropdown-item" type="button">Action</button></li>
-                    <li><button class="dropdown-item" type="button">Another action</button></li>
-                    <li><button class="dropdown-item" type="button">Something else here</button></li>
+                    <li>
+                        <button class="dropdown-item"
+                                onclick="filter_by_continent('All')"
+                                type="button">All</button>
+                    </li>
+                    <li>
+                        <button class="dropdown-item"
+                                onclick="filter_by_continent('EU')"
+                                type="button">Europe</button>
+                    </li>
+                    <li>
+                        <button class="dropdown-item"
+                                onclick="filter_by_continent('NA')"
+                                type="button">North America</button>
+                    </li>
+                    <li>
+                        <button class="dropdown-item"
+                                onclick="filter_by_continent('SA')"
+                                type="button">South America</button>
+                    </li>
+                    <li>
+                        <button class="dropdown-item"
+                                onclick="filter_by_continent('AS')"
+                                type="button">Asia</button>
+                    </li>
+                    <li>
+                        <button class="dropdown-item"
+                                onclick="filter_by_continent('AF')"
+                                type="button">Africa</button>
+                    </li>
+                    <li>
+                        <button class="dropdown-item"
+                                onclick="filter_by_continent('OC')"
+                                type="button">Oceania</button>
+                    </li>
+                    <li>
+                        <button class="dropdown-item"
+                                onclick="filter_by_continent('AN')"
+                                type="button">Antarctica</button>
+                    </li>
                 </ul>
             </div>
         </div>
-
         <div class="container pb-3" id="custom-cards">
             <div class="row row-cols-1 row-cols-lg-3 align-items-stretch g-4 pb-5 pt-3">
-                <div class="col">
-                    <div class="card card-cover h-100 overflow-hidden text-bg-dark rounded-4 shadow-lg"
-                        style="background-image: url('unsplash-photo-1.jpg');">
-                        <div class="d-flex flex-column h-100 p-5 pb-3 text-white text-shadow-1">
-                            <h3 class="pt-5 mt-5 mb-4 display-6 lh-1 fw-bold">Short title, long jacket</h3>
-                            <ul class="d-flex list-unstyled mt-auto">
-                                <li class="me-auto">
-                                    <img src="https://github.com/twbs.png" alt="Bootstrap" width="32" height="32"
-                                        class="rounded-circle border border-white">
-                                </li>
-                                <li class="d-flex align-items-center me-3">
-                                    <svg class="bi me-2" width="1em" height="1em">
-                                        <use xlink:href="#geo-fill" />
-                                    </svg>
-                                    <small>Earth</small>
-                                </li>
-                                <li class="d-flex align-items-center">
-                                    <svg class="bi me-2" width="1em" height="1em">
-                                        <use xlink:href="#calendar3" />
-                                    </svg>
-                                    <small>3d</small>
-                                </li>
-                            </ul>
+                {% for destination in destinations %}
+                    <div class="col">
+                        <div class="card card-cover h-100 overflow-hidden text-bg-dark rounded-4 shadow-lg"
+                             style="background-image: url('{{ destination.images.first.url }}');
+                                    background-size: cover;
+                                    text-shadow: 2px 2px #333333">
+                            <div class="d-flex flex-column h-100 p-5 pb-3 text-white text-shadow-1">
+                                <h3 class="pt-5 mt-5 mb-4 display-6 lh-1 fw-bold">{{ destination.title }}</h3>
+                                <ul class="d-flex list-unstyled mt-auto">
+                                    <li class="d-flex align-items-center">
+                                        <small>{{ destination.city }}, {{ destination.country }}, {{ destination.continent }}</small>
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
-                </div>
-
-                <div class="col">
-                    <div class="card card-cover h-100 overflow-hidden text-bg-dark rounded-4 shadow-lg"
-                        style="background-image: url('unsplash-photo-2.jpg');">
-                        <div class="d-flex flex-column h-100 p-5 pb-3 text-white text-shadow-1">
-                            <h3 class="pt-5 mt-5 mb-4 display-6 lh-1 fw-bold">Much longer title that wraps to multiple
-                                lines</h3>
-                            <ul class="d-flex list-unstyled mt-auto">
-                                <li class="me-auto">
-                                    <img src="https://github.com/twbs.png" alt="Bootstrap" width="32" height="32"
-                                        class="rounded-circle border border-white">
+                {% endfor %}
+            </div>
+            <div class="d-flex justify-content-end">
+                <div class="float-right">
+                    <ul class="pagination pagination-md">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}">&laquo;</a>
+                            </li>
+                        {% elif not page_obj.has_previous %}
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#">&laquo;</a>
+                            </li>
+                        {% endif %}
+                        {% for page in page_obj.paginator.page_range %}
+                            {% if page == page_obj.number %}
+                                <li class="page-item active">
+                                    <a class="page-link" href="?page={{ page }}">{{ page }}</a>
                                 </li>
-                                <li class="d-flex align-items-center me-3">
-                                    <svg class="bi me-2" width="1em" height="1em">
-                                        <use xlink:href="#geo-fill" />
-                                    </svg>
-                                    <small>Pakistan</small>
+                            {% elif page != page_obj.number %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page }}">{{ page }}</a>
                                 </li>
-                                <li class="d-flex align-items-center">
-                                    <svg class="bi me-2" width="1em" height="1em">
-                                        <use xlink:href="#calendar3" />
-                                    </svg>
-                                    <small>4d</small>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col">
-                    <div class="card card-cover h-100 overflow-hidden text-bg-dark rounded-4 shadow-lg"
-                        style="background-image: url('unsplash-photo-3.jpg');">
-                        <div class="d-flex flex-column h-100 p-5 pb-3 text-shadow-1">
-                            <h3 class="pt-5 mt-5 mb-4 display-6 lh-1 fw-bold">Another longer title belongs here</h3>
-                            <ul class="d-flex list-unstyled mt-auto">
-                                <li class="me-auto">
-                                    <img src="https://github.com/twbs.png" alt="Bootstrap" width="32" height="32"
-                                        class="rounded-circle border border-white">
-                                </li>
-                                <li class="d-flex align-items-center me-3">
-                                    <svg class="bi me-2" width="1em" height="1em">
-                                        <use xlink:href="#geo-fill" />
-                                    </svg>
-                                    <small>California</small>
-                                </li>
-                                <li class="d-flex align-items-center">
-                                    <svg class="bi me-2" width="1em" height="1em">
-                                        <use xlink:href="#calendar3" />
-                                    </svg>
-                                    <small>5d</small>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col">
-                    <div class="card card-cover h-100 overflow-hidden text-bg-dark rounded-4 shadow-lg"
-                        style="background-image: url('unsplash-photo-3.jpg');">
-                        <div class="d-flex flex-column h-100 p-5 pb-3 text-shadow-1">
-                            <h3 class="pt-5 mt-5 mb-4 display-6 lh-1 fw-bold">Another longer title belongs here</h3>
-                            <ul class="d-flex list-unstyled mt-auto">
-                                <li class="me-auto">
-                                    <img src="https://github.com/twbs.png" alt="Bootstrap" width="32" height="32"
-                                        class="rounded-circle border border-white">
-                                </li>
-                                <li class="d-flex align-items-center me-3">
-                                    <svg class="bi me-2" width="1em" height="1em">
-                                        <use xlink:href="#geo-fill" />
-                                    </svg>
-                                    <small>California</small>
-                                </li>
-                                <li class="d-flex align-items-center">
-                                    <svg class="bi me-2" width="1em" height="1em">
-                                        <use xlink:href="#calendar3" />
-                                    </svg>
-                                    <small>5d</small>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col">
-                    <div class="card card-cover h-100 overflow-hidden text-bg-dark rounded-4 shadow-lg"
-                        style="background-image: url('unsplash-photo-3.jpg');">
-                        <div class="d-flex flex-column h-100 p-5 pb-3 text-shadow-1">
-                            <h3 class="pt-5 mt-5 mb-4 display-6 lh-1 fw-bold">Another longer title belongs here</h3>
-                            <ul class="d-flex list-unstyled mt-auto">
-                                <li class="me-auto">
-                                    <img src="https://github.com/twbs.png" alt="Bootstrap" width="32" height="32"
-                                        class="rounded-circle border border-white">
-                                </li>
-                                <li class="d-flex align-items-center me-3">
-                                    <svg class="bi me-2" width="1em" height="1em">
-                                        <use xlink:href="#geo-fill" />
-                                    </svg>
-                                    <small>California</small>
-                                </li>
-                                <li class="d-flex align-items-center">
-                                    <svg class="bi me-2" width="1em" height="1em">
-                                        <use xlink:href="#calendar3" />
-                                    </svg>
-                                    <small>5d</small>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col">
-                    <div class="card card-cover h-100 overflow-hidden text-bg-dark rounded-4 shadow-lg"
-                        style="background-image: url('unsplash-photo-3.jpg');">
-                        <div class="d-flex flex-column h-100 p-5 pb-3 text-shadow-1">
-                            <h3 class="pt-5 mt-5 mb-4 display-6 lh-1 fw-bold">Another longer title belongs here</h3>
-                            <ul class="d-flex list-unstyled mt-auto">
-                                <li class="me-auto">
-                                    <img src="https://github.com/twbs.png" alt="Bootstrap" width="32" height="32"
-                                        class="rounded-circle border border-white">
-                                </li>
-                                <li class="d-flex align-items-center me-3">
-                                    <svg class="bi me-2" width="1em" height="1em">
-                                        <use xlink:href="#geo-fill" />
-                                    </svg>
-                                    <small>California</small>
-                                </li>
-                                <li class="d-flex align-items-center">
-                                    <svg class="bi me-2" width="1em" height="1em">
-                                        <use xlink:href="#calendar3" />
-                                    </svg>
-                                    <small>5d</small>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
+                            {% endif %}
+                        {% endfor %}
+                        {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.next_page_number }}">&raquo;</a>
+                            </li>
+                        {% elif not page_obj.has_next %}
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#">&raquo;</a>
+                            </li>
+                        {% endif %}
+                    </ul>
                 </div>
             </div>
         </div>
-
     </main>
-    {% endblock main%}
+{% endblock main %}
+{% block script %}
+    <script>
+        // Filter by continent by replace url when users switch dropdown menu
+       
+        const continent_dropdown = document.getElementById("continent_dropdown");
+        console.log(continent_dropdown);
+
+        const filter_by_continent = (value) => {
+            const location = window.location;
+            let url = location.protocol + '//' + location.host + location.pathname;
+            if(value != 'All') {
+                url = url + "?continent="+value;
+            }
+            window.location.href = url;
+        }
+
+    </script>
+{% endblock script %}

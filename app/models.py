@@ -83,6 +83,19 @@ class Destination(models.Model):
     images = models.ManyToManyField(Image)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    CONTINENT_CHOICES = (
+        ('NA', 'North America'),
+        ('SA', 'South America'),
+        ('EU', 'Europe'),
+        ('AS', 'Asia'),
+        ('AF', 'Africa'),
+        ('OC', 'Oceania'),
+        ('AN', 'Antarctica'),
+    )
+    continent = models.CharField(max_length=2, choices=CONTINENT_CHOICES)
+    country = models.CharField(max_length=255)
+    city = models.CharField(max_length=255)
+
     def __str__(self):
         return self.title
 
