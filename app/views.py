@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.views.generic import TemplateView, CreateView
+from django.views.generic import TemplateView, CreateView, ListView
 from django.urls import reverse_lazy
 
 from . import models
@@ -17,8 +17,13 @@ class SignUpView(CreateView):
     #     return super().form_valid(form)
 
 
-class HomeView(TemplateView):
+# Home Page View
+class HomeView(ListView):
     template_name = "index.html"
+    model = models.Post
+    context_object_name = "posts"
+    paginate_by = 10
+    queryset = models.Post.objects.select_related("user").all()
 
 
 class JournalListView(TemplateView):

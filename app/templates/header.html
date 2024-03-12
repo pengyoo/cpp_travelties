@@ -1,0 +1,80 @@
+{% load static %}
+<header class="p-2 mb-3 bg-primary" data-bs-theme="dark">
+    <div class="container">
+        <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+            <a class="navbar-brand" href="/" style="color: #ffffff">
+                <img height="30" src="{% static 'app/images/logo.png' %}" />
+            </a>
+            <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+                <li>
+                    <a href="/" class="nav-link active link-body-emphasis">Home</a>
+                </li>
+                <li>
+                    <a href="/posts" class="nav-link px-2 link-body-emphasis">Journals</a>
+                </li>
+                <li>
+                    <a href="/destinations" class="nav-link px-2 link-body-emphasis">Destinations</a>
+                </li>
+            </ul>
+            <form method="get"
+                  class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3"
+                  role="search">
+                <input type="search"
+                       name="address__contains"
+                       class="form-control"
+                       placeholder="Search by address..."
+                       aria-label="Search">
+            </form>
+            {% if not user.is_authenticated %}
+                <button class="btn btn-secondary">
+                    <a class="nav-link" href="{% url 'signin' %}">Sign In</a>
+                </button>
+                <button class="btn btn-light ms-2">
+                    <a class="nav-link" href="{% url 'signup' %}">Sign Up</a>
+                </button>
+            {% elif user.is_authenticated %}
+                <div class="dropdown text-end">
+                    <a href="#"
+                       class="d-block link-body-emphasis text-decoration-none dropdown-toggle"
+                       data-bs-toggle="dropdown"
+                       aria-expanded="false">
+                        {% if user.profile.avatar_image.url %}
+                            <img src="{{ user.profile.avatar_image.url }}"
+                                 alt="mdo"
+                                 width="32"
+                                 height="32"
+                                 class="rounded-circle" />
+                        {% elif not user.profile.avatar_image.url %}
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                 width="32"
+                                 height="32"
+                                 fill="currentColor"
+                                 class="bi bi-person-circle"
+                                 viewBox="0 0 16 16">
+                                <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0" />
+                                <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1" />
+                            </svg>
+                        {% endif %}
+                    </a>
+                    <ul class="dropdown-menu text-small">
+                        <li class="px-3">Welcome, {{ user.username }}</li>
+                        <li>
+                            <hr class="dropdown-divider" />
+                        </li>
+                        <li>
+                            <a class="dropdown-item"
+                               href="#"
+                               onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Sign out</a>
+                        </li>
+                    </ul>
+                    <form id="logout-form"
+                          method="post"
+                          action="{% url 'signout' %}"
+                          style="display: none">
+                        {% csrf_token %}
+                    </form>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</header>

@@ -26,11 +26,11 @@ class Image(models.Model):
 # User Profile Model
 class UserProfile(models.Model):
     user = models.OneToOneField(
-        User, on_delete=models.CASCADE, related_name="user_profile")
+        User, on_delete=models.CASCADE, related_name="profile")
     avatar_image = models.ForeignKey(
         Image, on_delete=models.SET_NULL, null=True, blank=True)
     profile = models.CharField(max_length=255)
-    slogan = models.CharField(max_length=30)
+    slogan = models.CharField(max_length=100)
 
     def __str__(self):
         return self.user.username
