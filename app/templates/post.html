@@ -3,17 +3,17 @@
     <div class="card ps-3 pe-3 pt-2" style="border: none; border-radius: 0%;">
         <div class="card-body">
             <h2>{{ post.title }}</h2>
-            <div class="d-flex justify-content-start my-3">
+            <div class="d-flex justify-content-start my-3 align-items-center">
                 {% if post.user.avatar_image.url %}
                     <img src="{{ post.user.avatar_image.url }}"
                          alt="mdo"
-                         width="50"
-                         height="50"
+                         width="30"
+                         height="30"
                          class="rounded-circle" />
                 {% elif not post.user.avatar_image.url %}
                     <svg xmlns="http://www.w3.org/2000/svg"
-                         width="50"
-                         height="50"
+                         width="30"
+                         height="30"
                          fill="currentColor"
                          class="bi bi-person-circle"
                          viewBox="0 0 16 16">
@@ -21,8 +21,8 @@
                         <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1" />
                     </svg>
                 {% endif %}
-                <div class="ms-2" style="vertical-align: baseline;">
-                    <h6 style="display:inline-flex;">{{ post.user }}</h6>
+                <div class="ms-2">
+                    <h5 style="display:inline-flex;">{{ post.user }}</h5>
                 </div>
                 <div class="ms-3">
                     <span style="color:gray;">{{ post.created_at }}</span>
