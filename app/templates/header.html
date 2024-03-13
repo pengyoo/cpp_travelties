@@ -57,7 +57,9 @@
                         {% endif %}
                     </a>
                     <ul class="dropdown-menu text-small">
-                        <li class="px-3">Welcome, {{ user.username }}</li>
+                        <li class="px-3">
+                            Welcome, <a href="{% url 'profile' %}">{{ user.username }}</a>
+                        </li>
                         <li>
                             <hr class="dropdown-divider" />
                         </li>

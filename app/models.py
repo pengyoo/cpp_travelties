@@ -47,7 +47,8 @@ class FollowingRelation(models.Model):
 
 # Post (Journal) Model
 class Post(models.Model):
-    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        UserProfile, on_delete=models.CASCADE, related_name="posts")
     title = models.CharField(max_length=255)
     summary = models.CharField(max_length=255)
     content = models.TextField()

@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.views.generic import TemplateView, CreateView, ListView, DetailView
 from django_filters.views import FilterView
 from django.urls import reverse_lazy
+from django.contrib.auth.models import User
 
 from . import models
 from . import forms
@@ -36,6 +37,7 @@ class PostListView(ListView):
     paginate_by = 10
 
 
+# Post Detail View
 class PostDetailView(DetailView):
     template_name = "post.html"
     model = models.Post
@@ -49,3 +51,22 @@ class DestinationListView(FilterView):
     context_object_name = "destinations"
     paginate_by = 10
     filterset_class = filters.DestinationFilter
+
+
+# Destination Detail View
+class DestinationDetailView(DetailView):
+    template_name = "destination.html"
+    model = models.Destination
+    context_object_name = "destination"
+
+
+# Destination Detail View
+class ProfileView(TemplateView):
+    template_name = "profile.html"
+
+
+# Destination Detail View
+class MeDetailView(DetailView):
+    template_name = "me.html"
+    model = User
+    context_object_name = "me"
