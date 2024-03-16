@@ -26,51 +26,12 @@
         </div>
         <div class="row">
             <div class="col-lg-3">
-                <div class="card mt-3 ps-3 pe-3 pt-2"
-                     style="border: none;
-                            border-radius: 0%">
+                <div class="card mt-3 pt-2" style="border: none; border-radius: 0%">
                     <div class="card-body">
-                        <h5 class="card-title">Who to follow</h5>
+                        <h5 class="card-title">About Me</h5>
+                        <div>{{ me.profile.profile }}</div>
                     </div>
-                    <div class="row mb-3">
-                        <div class="col-3">
-                            <img width="50"
-                                 src="https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/avatars/af/af7b38b9b302fb00262847bddf216a0d637382d3_full.jpg" />
-                        </div>
-                        <div class="col-6">
-                            <h6>John Robert</h6>
-                            <div style="font-size: 14px; color: gray;">Travel Expert</div>
-                        </div>
-                        <div class="col-3 text-center">
-                            <button type="button" class="btn btn-outline-info">+</button>
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-3">
-                            <img width="50"
-                                 src="https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/avatars/af/af7b38b9b302fb00262847bddf216a0d637382d3_full.jpg" />
-                        </div>
-                        <div class="col-6">
-                            <h5>John Robert</h5>
-                            <div>Travel Expert</div>
-                        </div>
-                        <div class="col-3 text-center">
-                            <button type="button" class="btn btn-outline-info">+</button>
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-3">
-                            <img width="50"
-                                 src="https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/avatars/af/af7b38b9b302fb00262847bddf216a0d637382d3_full.jpg" />
-                        </div>
-                        <div class="col-6">
-                            <h5>John Robert</h5>
-                            <div>Travel Expert</div>
-                        </div>
-                        <div class="col-3 text-center">
-                            <button type="button" class="btn btn-outline-info">+</button>
-                        </div>
-                    </div>
+ 
                 </div>
             </div>
             <div class="col-lg-9">
@@ -84,22 +45,15 @@
                                     type="button"
                                     role="tab"
                                     aria-controls="nav-home"
-                                    aria-selected="true">Profile</button>
+                                    aria-selected="true">Journals</button>
+ 
                             <button class="nav-link"
-                                    id="nav-profile-tab"
+                                    id="nav-follower-tab"
                                     data-bs-toggle="tab"
-                                    data-bs-target="#nav-profile"
+                                    data-bs-target="#nav-follower"
                                     type="button"
                                     role="tab"
-                                    aria-controls="nav-profile"
-                                    aria-selected="false">Journals</button>
-                            <button class="nav-link"
-                                    id="nav-contact-tab"
-                                    data-bs-toggle="tab"
-                                    data-bs-target="#nav-contact"
-                                    type="button"
-                                    role="tab"
-                                    aria-controls="nav-contact"
+                                    aria-controls="nav-follower"
                                     aria-selected="false">Followers</button>
                             <button class="nav-link"
                                     id="nav-followings-tab"
@@ -116,11 +70,6 @@
                              id="nav-home"
                              role="tabpanel"
                              aria-labelledby="nav-home-tab"
-                             tabindex="0">{{ user.profile.profile }}</div>
-                        <div class="tab-pane fade p-3"
-                             id="nav-profile"
-                             role="tabpanel"
-                             aria-labelledby="nav-profile-tab"
                              tabindex="0">
                             <div class="row row-cols-1 row-cols-lg-3 align-items-stretch g-2">
                                 {% for post in me.profile.posts.all %}
@@ -161,9 +110,9 @@
                             </div>
                         </div>
                         <div class="tab-pane fade p-3"
-                             id="nav-contact"
+                             id="nav-follower"
                              role="tabpanel"
-                             aria-labelledby="nav-contact-tab"
+                             aria-labelledby="nav-follower-tab"
                              tabindex="0">
                             <div class="row row-cols-1 row-cols-lg-3 align-items-stretch g-2">
                                 {% for follower in me.profile.followers.all %}
@@ -200,16 +149,16 @@
                              aria-labelledby="nav-followings-tab"
                              tabindex="0">
                             <div class="row row-cols-1 row-cols-lg-3 align-items-stretch g-2">
-                                {% for follower in me.profile.followings.all %}
+                                {% for following in me.profile.followings.all %}
                                     <div class="col">
                                         <div class="card p-3">
                                             <div class="text-center">
-                                                {% if follower.follower.avatar_image.url %}
-                                                    <img src="{{ follower.follower.avatar_image.url }}"
+                                                {% if following.following.avatar_image.url %}
+                                                    <img src="{{ following.following.avatar_image.url }}"
                                                          alt="mdo"
                                                          width="80"
                                                          height="80" />
-                                                {% elif not follower.follower.avatar_image.url %}
+                                                {% elif not following.following.avatar_image.url %}
                                                     <svg xmlns="http://www.w3.org/2000/svg"
                                                          width="80"
                                                          height="80"
@@ -220,8 +169,8 @@
                                                         <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1" />
                                                     </svg>
                                                 {% endif %}
-                                                <div class="mt-2" style="font-size: 18; font-weight: bolder;">{{ follower.follower.user.username }}</div>
-                                                <div class="mt-3" style="color:#444444; font-size: 14px;">{{ follower.follower.user.profile.profile }}</div>
+                                                <div class="mt-2" style="font-size: 18; font-weight: bolder;">{{ following.following.user.username }}</div>
+                                                <div class="mt-3" style="color:#444444; font-size: 14px;">{{ following.following.user.profile.profile }}</div>
                                             </div>
                                         </div>
                                     </div>

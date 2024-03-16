@@ -61,11 +61,6 @@ class DestinationDetailView(DetailView):
 
 
 # Destination Detail View
-class ProfileView(TemplateView):
-    template_name = "profile.html"
-
-
-# Destination Detail View
 class MeDetailView(DetailView):
     template_name = "me.html"
     model = User
