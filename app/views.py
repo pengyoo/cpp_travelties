@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.views.generic import TemplateView, CreateView, ListView, DetailView
+from django.views.generic import TemplateView, CreateView, ListView, DetailView, CreateView
 from django_filters.views import FilterView
 from django.urls import reverse_lazy
 from django.contrib.auth.models import User
@@ -35,6 +35,20 @@ class PostListView(ListView):
     model = models.Post
     context_object_name = "posts"
     paginate_by = 10
+
+
+# Create Post (Journal) View
+class PostCreateView(CreateView):
+    template_name = "index.html"
+    model = models.Post
+    form_class = forms.PostForm
+
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        
+        return super().form_valid(form)
+    
 
 
 # Post Detail View

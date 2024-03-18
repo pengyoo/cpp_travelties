@@ -225,103 +225,135 @@
 {% endblock center %}
 {% block other %}
   <!-- Modal -->
-  <div class="modal fade"
-       id="postModal"
-       tabindex="-1"
-       aria-labelledby="postModalLabel"
-       aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-xl">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h1 class="modal-title fs-5" id="postModalLabel">Share your travel journal...</h1>
-          <button type="button"
-                  class="btn-close"
-                  data-bs-dismiss="modal"
-                  aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <div class="input-group mb-3">
-            <input type="text"
-                   class="form-control"
-                   placeholder="Title"
-                   aria-label="title"
-                   aria-describedby="title">
+  <form id="post_form" action="{% url 'post_create' %}" method="post">
+    {% csrf_token %}
+    <div class="modal fade"
+         id="postModal"
+         tabindex="-1"
+         aria-labelledby="postModalLabel"
+         aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="postModalLabel">Share your travel journal...</h1>
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"></button>
           </div>
-          <div id="editor" class="form-control"></div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary">Submit</button>
+          <div class="modal-body">
+            <div class="input-group mb-3">
+              <input type="text"
+                     class="form-control"
+                     placeholder="Title"
+                     aria-label="title"
+                     name="title"
+                     aria-describedby="title">
+            </div>
+            <div class="input-group mb-3">
+              <textarea class="form-control"
+                        placeholder="Summary"
+                        aria-label="summary"
+                        name="summary"
+                        aria-describedby="summary"></textarea>
+            </div>
+            <div id="editor" class="form-control">
+              </texdivtarea>
+              <textarea name="content" style="display:none" id="hiddenArea"></textarea>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-  </div>
-{% endblock other %}
-{% block script %}
-  <script src="https://cdn.jsdelivr.net/npm/quill@2.0.0-rc.2/dist/quill.js"></script>
-  <!-- Initialize Quill editor -->
-  <script>
-    const toolbarOptions = [
-      ['bold', 'italic', 'underline', 'strike'],
-      ['blockquote', 'code-block'],
-      ['link', 'image'],
-      [{ 'list': 'ordered' }, { 'list': 'bullet' }, { 'list': 'check' }],
-      [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+    </form>
+  {% endblock other %}
+  {% block script %}
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+            integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+            crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.0-rc.2/dist/quill.js"></script>
+    <!-- Initialize Quill editor -->
+    <script>
+        const toolbarOptions = [
+            ['bold', 'italic', 'underline', 'strike'],
+            ['blockquote', 'code-block'],
+            ['link', 'image'],
+            [{
+                'list': 'ordered'
+            }, {
+                'list': 'bullet'
+            }, {
+                'list': 'check'
+            }],
+            [{
+                'header': [1, 2, 3, 4, 5, 6, false]
+            }],
 
-      [{ 'color': [] }, { 'background': [] }],
-      [{ 'align': [] }],
-    ];
+            [{
+                'color': []
+            }, {
+                'background': []
+            }],
+            [{
+                'align': []
+            }],
+        ];
 
-    const imgHandler = (value) => {
-      console.log(value)
-    }
-
-    const quill = new Quill('#editor', {
-      theme: 'snow',
-      modules: {
-        toolbar: toolbarOptions
-      }
-    });
-
-    function selectLocalImage() {
-      const input = document.createElement('input');
-      input.setAttribute('type', 'file');
-      input.setAttribute('accept', 'image/png, image/gif, image/jpeg')
-      input.click();
-
-      input.onchange = () => {
-        const file = input.files[0];
-        if (/^image\//.test(file.type)) {
-          upload(file);
-        } else {
-          console.warn('You could only upload images.');
+        const imgHandler = (value) => {
+            console.log(value)
         }
-      };
-    }
 
-    function upload(file) {
-      const fd = new FormData();
-      fd.append('image', file);
+        const quill = new Quill('#editor', {
+            theme: 'snow',
+            modules: {
+                toolbar: toolbarOptions
+            }
+        });
 
-      const xhr = new XMLHttpRequest();
-      xhr.open('POST', 'http://localhost:3000/upload/image', true);
-      xhr.onload = () => {
-        if (xhr.status === 200) {
-          const url = JSON.parse(xhr.responseText).data;
-          addImageToEditor(url);
+        $("#post_form").on("submit", function() {
+            $("#hiddenArea").val($("#editor").html());
+        })
+
+        function selectLocalImage() {
+            const input = document.createElement('input');
+            input.setAttribute('type', 'file');
+            input.setAttribute('accept', 'image/png, image/gif, image/jpeg')
+            input.click();
+
+            input.onchange = () => {
+                const file = input.files[0];
+                if (/^image\//.test(file.type)) {
+                    upload(file);
+                } else {
+                    console.warn('You could only upload images.');
+                }
+            };
         }
-      };
-      xhr.send(fd);
-    }
 
-    function addImageToEditor(url) {
-      const range = editor.getSelection();
-      editor.insertEmbed(range.index, 'image', `http://localhost:9000${url}`);
-    }
-    quill.getModule('toolbar').addHandler('image', () => {
-      selectLocalImage();
-    });
+        function upload(file) {
+            const fd = new FormData();
+            fd.append('image', file);
 
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', 'http://localhost:3000/upload/image', true);
+            xhr.onload = () => {
+                if (xhr.status === 200) {
+                    const url = JSON.parse(xhr.responseText).data;
+                    addImageToEditor(url);
+                }
+            };
+            xhr.send(fd);
+        }
 
-  </script>
-{% endblock script %}
+        function addImageToEditor(url) {
+            const range = editor.getSelection();
+            editor.insertEmbed(range.index, 'image', `http://localhost:9000${url}`);
+        }
+        quill.getModule('toolbar').addHandler('image', () => {
+            selectLocalImage();
+        });
+    </script>
+  {% endblock script %}
