@@ -11,7 +11,8 @@ urlpatterns = [
     path('posts_create/', views.PostCreateView.as_view(), name="post_create"),
     path('image_upload/', views.ImageUploadView, name="image_upload"),
     path('comments_create/', views.CommentCreateView, name="comments_create"),
-
+    path('follow/', views.FollowView, name="follow"),
+    path('unfollow/<int:user_id>', views.UnFollowView, name="unfollow"),
     path('destinations/', views.DestinationListView.as_view(),
          name="destination_list"),
     path('destinations/<int:pk>', views.DestinationDetailView.as_view(),

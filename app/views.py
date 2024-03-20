@@ -41,6 +41,8 @@ class HomeView(ListView):
             user=self.request.user.profile).count()
         context['following_count'] = self.request.user.profile.followings.count()
         context['follower_count'] = self.request.user.profile.followers.count()
+        context['following_list'] = self.request.user.profile.followings.all(
+        ).values_list('following', flat=True)
         return context
 
 
@@ -104,9 +106,8 @@ def CommentCreateView(request):
     else:
         return JsonResponse({"error": "Method is not allowed!"})
 
+
 # Handle Image uoload
-
-
 def ImageUploadView(request):
     if request.method == 'POST':
         image = request.FILES['image']
@@ -154,3 +155,36 @@ class MeDetailView(DetailView):
     template_name = "me.html"
     model = User
     context_object_name = "me"
+
+
+# Handle Follow (ajax)
+def FollowView(request):
+    if request.method == 'POST':
+        user_id = request.POST['user_id']
+        following_user = User.objects.prefetch_related('profile').get(
+            pk=user_id).profile
+        follower_user = request.user.profile
+        models.FollowingRelation.objects.get_or_create(
+            follower=follower_user, following=following_user)
+        data = {"message": "success"}
+        return JsonResponse(data)
+    if request.method == 'DELETE':
+        user_id = request.DELETE['user_id']
+        models.FollowingRelation.objects.delete(
+            follower__id=request.user.id, following__id=user_id)
+        data = {"message": "success"}
+        return JsonResponse(data)
+    else:
+        return JsonResponse({"error": "Method is not allowed!"})
+
+# Handle Follow (ajax)
+
+
+def UnFollowView(request, user_id):
+    if request.method == 'DELETE':
+        models.FollowingRelation.objects.filter(
+            follower__id=request.user.id, following__id=user_id).delete()
+        data = {"message": "success"}
+        return JsonResponse(data)
+    else:
+        return JsonResponse({"error": "Method is not allowed!"})
