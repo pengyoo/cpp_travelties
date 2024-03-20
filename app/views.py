@@ -9,6 +9,7 @@ from django.contrib.auth.models import User
 from django.http import JsonResponse
 from django.conf import settings
 from django.utils import formats
+from django.db.models import Count
 from .utils import upload_file
 from . import models
 from . import forms
@@ -33,6 +34,14 @@ class HomeView(ListView):
     context_object_name = "posts"
     paginate_by = 10
     queryset = models.Post.objects.select_related("user").all()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['journal_count'] = models.Post.objects.filter(
+            user=self.request.user.profile).count()
+        context['following_count'] = self.request.user.profile.followings.count()
+        context['follower_count'] = self.request.user.profile.followers.count()
+        return context
 
 
 # Post (Journal) List View
