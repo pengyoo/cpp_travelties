@@ -29,3 +29,11 @@ class PostForm(forms.ModelForm):
     class Meta:
         model = models.Post
         fields = ['title', 'summary', 'content']
+
+
+class CommentForm(forms.ModelForm):
+    post_id = forms.IntegerField()
+
+    class Meta:
+        model = models.Comment
+        fields = ['content']

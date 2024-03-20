@@ -17,12 +17,13 @@
                 </li>
             </ul>
             <form method="get"
-                  class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3"
+                  action="{% url 'destination_list' %}"
+                  class="col-12 col-lg-2 mb-3 mb-lg-0 me-lg-3"
                   role="search">
                 <input type="search"
-                       name="address__contains"
+                       name="title__contains"
                        class="form-control"
-                       placeholder="Search..."
+                       placeholder="Search destinations..."
                        aria-label="Search">
             </form>
             {% if not user.is_authenticated %}

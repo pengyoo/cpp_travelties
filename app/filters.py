@@ -11,4 +11,5 @@ class DestinationFilter(django_filters.FilterSet):
             'continent': ['exact'],
             'country': ['contains'],
             'city': ['contains'],
+            'title': ['contains']
         }

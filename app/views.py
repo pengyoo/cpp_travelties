@@ -1,13 +1,14 @@
+import os
+from datetime import datetime
+from uuid import uuid4
 from django.shortcuts import render
 from django.views.generic import TemplateView, CreateView, ListView, DetailView, CreateView
 from django_filters.views import FilterView
 from django.urls import reverse_lazy
 from django.contrib.auth.models import User
 from django.http import JsonResponse
-import os
 from django.conf import settings
-from uuid import uuid4
-
+from django.utils import formats
 from .utils import upload_file
 from . import models
 from . import forms
@@ -40,10 +41,11 @@ class PostListView(ListView):
     model = models.Post
     context_object_name = "posts"
     paginate_by = 10
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['top_posts'] = models.Post.objects.filter(images__isnull=False).order_by("created_at")[:3]
+        context['top_posts'] = models.Post.objects.filter(
+            images__isnull=False).order_by("created_at")[:3]
         return context
 
 
@@ -76,13 +78,20 @@ class PostCreateView(CreateView):
 # Handle comment create (ajax)
 def CommentCreateView(request):
     if request.method == 'POST':
-        post = models.Post.objects.get(pk=request.POST['post_id'])
-        comment = models.Comment.objects.create(
-            post=post, content=request.POST['comment'], user=request.user.profile)
-        data = {"comment": comment.content,
-                "username": request.user.username,
-                "user_avatar": request.user.profile.avatar_image.url, "created_at":  comment.created_at}
-        return JsonResponse(data)
+
+        form = forms.CommentForm(request.POST)
+        if form.is_valid():
+            post_id = form.cleaned_data['post_id']
+            content = form.cleaned_data['content']
+            post = models.Post.objects.get(pk=post_id)
+            comment = models.Comment.objects.create(
+                post=post, content=content, user=request.user.profile)
+            data = {"comment": comment.content,
+                    "username": request.user.username,
+                    "user_avatar": request.user.profile.avatar_image.url, "created_at":  formats.date_format(comment.created_at, "DATETIME_FORMAT")}
+            return JsonResponse(data)
+        else:
+            return JsonResponse(form.errors.as_json(), status=300, safe=False)
     else:
         return JsonResponse({"error": "Method is not allowed!"})
 
