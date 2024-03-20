@@ -23,6 +23,9 @@
                            name="title"
                            aria-describedby="title">
                 </div>
+                {% if form.title.errors %}
+                    <div class="alert alert-danger pt-2 p-0" role="alert">{{ form.title.errors }}</div>
+                {% endif %}
                 <div class="input-group mb-3">
                     <textarea class="form-control"
                               placeholder="Summary"
@@ -30,7 +33,13 @@
                               name="summary"
                               aria-describedby="summary"></textarea>
                 </div>
+                {% if form.summary.errors %}
+                    <div class="alert alert-danger pt-2 p-0" role="alert">{{ form.summary.errors }}</div>
+                {% endif %}
                 <div id="editor" class="form-control"></div>
+                {% if form.content.errors %}
+                    <div class="alert alert-danger pt-2 p-0" role="alert">{{ form.content.errors }}</div>
+                {% endif %}
                 <textarea name="content" style="display:none" id="hiddenArea"></textarea>
                 <input id="image_ids" type="hidden" name="image_ids" />
                 <div class="modal-footer">
