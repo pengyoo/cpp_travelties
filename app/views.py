@@ -76,7 +76,7 @@ def CommentCreateView(request):
             post=post, content=request.POST['comment'], user=request.user.profile)
         data = {"comment": comment.content,
                 "username": request.user.username,
-                "user_avatar": request.user.profile.avatar_image.url, "created_at":  format(comment.created_at, 'F j, Y, P')}
+                "user_avatar": request.user.profile.avatar_image.url, "created_at":  comment.created_at}
         return JsonResponse(data)
     else:
         return JsonResponse({"error": "Method is not allowed!"})
