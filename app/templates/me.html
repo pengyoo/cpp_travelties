@@ -31,7 +31,6 @@
                         <h5 class="card-title">About Me</h5>
                         <div>{{ me.profile.profile }}</div>
                     </div>
- 
                 </div>
             </div>
             <div class="col-lg-9">
@@ -46,7 +45,6 @@
                                     role="tab"
                                     aria-controls="nav-home"
                                     aria-selected="true">Journals</button>
- 
                             <button class="nav-link"
                                     id="nav-follower-tab"
                                     data-bs-toggle="tab"
@@ -73,27 +71,27 @@
                              tabindex="0">
                             <div class="row row-cols-1 row-cols-lg-3 align-items-stretch g-2">
                                 {% for post in me.profile.posts.all %}
-                                    <a class="nav-link" href="{% url 'post_detail' post.id %}">
-                                        <div class="col">
+                                    <div class="col">
+                                        <a class="nav-link" href="{% url 'post_detail' post.id %}">
                                             <div class="card card-cover h-50 overflow-hidden text-bg-dark rounded-4 shadow-lg"
                                                  style="background-image: url('{{ post.images.first.url }}');
                                                         background-size: cover;
                                                         text-shadow: 2px 2px #333333">
                                                 <div class="d-flex flex-column h-50 p-5 pb-3 text-white text-shadow-1">
-                                                    <h3 class="pt-2 mt-1 mb-4 display-6 lh-1 fw-bold">{{ post.title }}</h3>
+                                                    <h3 class="mb-4">{{ post.title }}</h3>
                                                     <ul class="d-flex list-unstyled mt-auto">
                                                         <li class="me-auto">
-                                                            <img src="https://github.com/twbs.png"
-                                                                 alt="Bootstrap"
+                                                            <img src="{{ post.user.avatar_image.url }}"
                                                                  width="32"
                                                                  height="32"
                                                                  class="rounded-circle border border-white">
+                                                            <span class="ms-2">{{ post.user.user.username }}</span>
                                                         </li>
                                                         <li class="d-flex align-items-center me-3">
                                                             <svg class="bi me-2" width="1em" height="1em">
                                                                 <use xlink:href="#geo-fill" />
                                                             </svg>
-                                                            <small>Earth</small>
+                                                            <small>{{ post.created_at }}</small>
                                                         </li>
                                                         <li class="d-flex align-items-center">
                                                             <svg class="bi me-2" width="1em" height="1em">
@@ -104,8 +102,8 @@
                                                     </ul>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </a>
+                                        </a>
+                                    </div>
                                 {% endfor %}
                             </div>
                         </div>
