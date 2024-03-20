@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+{% block style %}
+    #editor {
+    height: 25rem;
+    flex: 1;
+    overflow-y: auto;
+    width: 100%;
+    }
+{% endblock style %}
+{% block main %}
+    <div class="container">
+        <div class="card p-3" style="border:none;">
+            <form id="post_form" action="{% url 'post_create' %}" method="post">
+                {% csrf_token %}
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger pt-2 p-0" role="alert">{{ form.non_field_errors }}</div>
+                {% endif %}
+                <div class="input-group mb-3">
+                    <input type="text"
+                           class="form-control"
+                           placeholder="Title"
+                           aria-label="title"
+                           name="title"
+                           aria-describedby="title">
+                </div>
+                <div class="input-group mb-3">
+                    <textarea class="form-control"
+                              placeholder="Summary"
+                              aria-label="summary"
+                              name="summary"
+                              aria-describedby="summary"></textarea>
+                </div>
+                <div id="editor" class="form-control"></div>
+                <textarea name="content" style="display:none" id="hiddenArea"></textarea>
+                <input id="image_ids" type="hidden" name="image_ids" />
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock main %}
+{% block script %}
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+            integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+            crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.0-rc.2/dist/quill.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
+    <!-- Initialize Quill editor -->
+    <script>
+        const toolbarOptions = [
+            ['bold', 'italic', 'underline', 'strike'],
+            ['blockquote', 'code-block'],
+            ['link', 'image'],
+            [{
+                'list': 'ordered'
+            }, {
+                'list': 'bullet'
+            }, {
+                'list': 'check'
+            }],
+            [{
+                'header': [1, 2, 3, 4, 5, 6, false]
+            }],
+
+            [{
+                'color': []
+            }, {
+                'background': []
+            }],
+            [{
+                'align': []
+            }],
+        ];
+
+        const imgHandler = (value) => {
+            console.log(value)
+        }
+
+        const quill = new Quill('#editor', {
+            theme: 'snow',
+            modules: {
+                toolbar: toolbarOptions
+            }
+        });
+
+        $("#post_form").on("submit", function() {
+            $("#hiddenArea").val(quill.root.innerHTML);
+        })
+
+        function selectLocalImage() {
+            const input = document.createElement('input');
+            input.setAttribute('type', 'file');
+            input.setAttribute('accept', 'image/png, image/gif, image/jpeg')
+            input.click();
+
+            input.onchange = () => {
+                const file = input.files[0];
+                if (/^image\//.test(file.type)) {
+                    upload(file);
+                } else {
+                    console.warn('You could only upload images.');
+                }
+            };
+        }
+
+        // Handle django csrf_token
+        const csrftoken = Cookies.get('csrftoken');
+
+        // Upload an image
+        function upload(file) {
+            const fd = new FormData();
+            fd.append('image', file);
+
+            axios.post("{% url 'image_upload' %}", fd, {
+                headers: {
+                    'X-CSRFToken': csrftoken, 
+                    'Content-Type': 'multipart/form-data',
+                }
+            }).then((resp)=>{
+                console.log(resp.data)
+                addImageToEditor(resp.data.url);
+                $("#image_ids").val($("#image_ids").val() + "," + resp.data.image_id);
+            });
+        }
+
+        function addImageToEditor(url) {
+            const range = quill.getSelection();
+            if (range) {
+                // Insert a new paragraph before the image
+                quill.insertText(range.index, '\n', 'user');
+                quill.formatLine(range.index, 1, 'align', 'left'); 
+                // Insert the image
+                quill.insertEmbed(range.index + 1, 'image', url);
+                // Insert a new paragraph after the image
+                quill.insertText(range.index + 2, '\n', 'user');
+                quill.formatLine(range.index + 2, 1, 'align', 'left'); 
+            } else {
+                // If there is no selection, insert the image at the end of the editor
+                quill.insertEmbed(quill.getLength(), 'image', url);
+                // Insert a new paragraph after the image
+                quill.insertText(quill.getLength(), '\n', 'user');
+                quill.formatLine(quill.getLength(), 1, 'align', 'left');
+            }
+        }
+        quill.getModule('toolbar').addHandler('image', () => {
+            selectLocalImage();
+        });
+    </script>
+{% endblock script %}

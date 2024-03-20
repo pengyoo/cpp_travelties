@@ -24,6 +24,8 @@ class SignUpForm(UserCreationForm):
 
 class PostForm(forms.ModelForm):
 
+    image_ids = forms.CharField()
+
     class Meta:
         model = models.Post
         fields = ['title', 'summary', 'content']

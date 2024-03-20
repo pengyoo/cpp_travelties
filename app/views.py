@@ -3,7 +3,12 @@ from django.views.generic import TemplateView, CreateView, ListView, DetailView,
 from django_filters.views import FilterView
 from django.urls import reverse_lazy
 from django.contrib.auth.models import User
+from django.http import JsonResponse
+import os
+from django.conf import settings
+from uuid import uuid4
 
+from .utils import upload_file
 from . import models
 from . import forms
 from . import filters
@@ -39,16 +44,63 @@ class PostListView(ListView):
 
 # Create Post (Journal) View
 class PostCreateView(CreateView):
-    template_name = "index.html"
-    model = models.Post
+    template_name = "post-create.html"
     form_class = forms.PostForm
 
-
     def form_valid(self, form):
-        form.instance.user = self.request.user
-        
-        return super().form_valid(form)
-    
+        form.instance.user = self.request.user.profile
+        image_ids = form.cleaned_data.get("image_ids").strip().split(",")
+
+        return_value = super().form_valid(form)
+
+        for id in image_ids:
+            if id:
+                form.instance.images.add(models.Image.objects.get(pk=id))
+
+        return return_value
+
+    # echo form data if data is invalid
+    def form_invalid(self, form):
+        return self.render_to_response(self.get_context_data(form=form))
+
+    # redirect to published post
+    def get_success_url(self):
+        return reverse_lazy('post_detail', kwargs={'pk': self.object.pk})
+
+
+# Handle comment create (ajax)
+def CommentCreateView(request):
+    if request.method == 'POST':
+        post = models.Post.objects.get(pk=request.POST['post_id'])
+        comment = models.Comment.objects.create(
+            post=post, content=request.POST['comment'], user=request.user.profile)
+        data = {"comment": comment.content,
+                "username": request.user.username,
+                "user_avatar": request.user.profile.avatar_image.url, "created_at":  format(comment.created_at, 'F j, Y, P')}
+        return JsonResponse(data)
+    else:
+        return JsonResponse({"error": "Method is not allowed!"})
+
+# Handle Image uoload
+
+
+def ImageUploadView(request):
+    if request.method == 'POST':
+        image = request.FILES['image']
+        object_name = settings.S3_IMAGE_PATH + \
+            str(uuid4()) + os.path.splitext(image.name)[1].lower()
+        image_url = upload_file(image, object_name)
+
+        # Save image object
+        image_saved = models.Image.objects.create(
+            title=os.path.splitext(image.name)[0], url=image_url)
+
+        # Retuen json data
+        data = {"image_id": image_saved.id, "url": image_url}
+
+        return JsonResponse(data)
+    else:
+        return JsonResponse({"error": "Method is not allowed!"})
 
 
 # Post Detail View
