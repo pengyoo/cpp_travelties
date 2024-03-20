@@ -40,6 +40,11 @@ class PostListView(ListView):
     model = models.Post
     context_object_name = "posts"
     paginate_by = 10
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['top_posts'] = models.Post.objects.filter(images__isnull=False).order_by("created_at")[:3]
+        return context
 
 
 # Create Post (Journal) View

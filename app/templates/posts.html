@@ -1,78 +1,42 @@
 {% extends "base.html" %}
 {% block main %}
     <main>
-        <div id="myCarousel" class="carousel slide mb-6" data-bs-ride="carousel">
+        <div id="myCarousel"
+             class="carousel slide"
+             style="width:100%;
+                    height:30rem"
+             data-bs-ride="carousel">
             <div class="carousel-indicators">
-                <button type="button"
-                        data-bs-target="#myCarousel"
-                        data-bs-slide-to="0"
-                        class="active"
-                        aria-current="true"
-                        aria-label="Slide 1"></button>
-                <button type="button"
-                        data-bs-target="#myCarousel"
-                        data-bs-slide-to="1"
-                        aria-label="Slide 2"></button>
-                <button type="button"
-                        data-bs-target="#myCarousel"
-                        data-bs-slide-to="2"
-                        aria-label="Slide 3"></button>
+                {% for top_post in top_posts %}
+                    <button type="button"
+                            data-bs-target="#myCarousel"
+                            data-bs-slide-to="{{ forloop.counter0 }}"
+                            class="{% if forloop.first %}active{% endif %}"
+                            aria-current="true"
+                            aria-label="Slide {{ forloop.counter0 }}"></button>
+                {% endfor %}
             </div>
             <div class="carousel-inner">
-                <div class="carousel-item active">
-                    <svg class="bd-placeholder-img"
-                         width="100%"
-                         height="100%"
-                         xmlns="http://www.w3.org/2000/svg"
-                         aria-hidden="true"
-                         preserveAspectRatio="xMidYMid slice"
-                         focusable="false">
-                        <rect width="100%" height="100%" fill="var(--bs-secondary-color)" />
-                    </svg>
-                    <div class="container">
-                        <div class="carousel-caption text-start">
-                            <h1>Example headline.</h1>
-                            <p class="opacity-75">
-                                Some representative placeholder content for the first slide of the
-                                carousel.
-                            </p>
+                {% for top_post in top_posts %}
+                    <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                        <img src="{{ top_post.images.first.url }}"
+                             style="width:100%;
+                                    height:30rem;
+                                    overflow:hidden;
+                                    object-fit:cover" />
+                        <div class="container">
+                            <a href="{% url 'post_detail' top_post.id %}"
+                               target="_blank"
+                               class="nav-link">
+                                <div class="carousel-caption text-start"
+                                     style="text-shadow: 2px 2px #333333">
+                                    <h1>{{ top_post.title }}</h1>
+                                    <p class="opacity-75">{{ top_post.summary }}</p>
+                                </div>
+                            </a>
                         </div>
                     </div>
-                </div>
-                <div class="carousel-item">
-                    <svg class="bd-placeholder-img"
-                         width="100%"
-                         height="100%"
-                         xmlns="http://www.w3.org/2000/svg"
-                         aria-hidden="true"
-                         preserveAspectRatio="xMidYMid slice"
-                         focusable="false">
-                        <rect width="100%" height="100%" fill="var(--bs-secondary-color)" />
-                    </svg>
-                    <div class="container">
-                        <div class="carousel-caption">
-                            <h1>Another example headline.</h1>
-                            <p>Some representative placeholder content for the second slide of the carousel.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="carousel-item">
-                    <svg class="bd-placeholder-img"
-                         width="100%"
-                         height="100%"
-                         xmlns="http://www.w3.org/2000/svg"
-                         aria-hidden="true"
-                         preserveAspectRatio="xMidYMid slice"
-                         focusable="false">
-                        <rect width="100%" height="100%" fill="var(--bs-secondary-color)" />
-                    </svg>
-                    <div class="container">
-                        <div class="carousel-caption text-end">
-                            <h1>One more for good measure.</h1>
-                            <p>Some representative placeholder content for the third slide of this carousel.</p>
-                        </div>
-                    </div>
-                </div>
+                {% endfor %}
             </div>
             <button class="carousel-control-prev"
                     type="button"
@@ -89,7 +53,7 @@
                 <span class="visually-hidden">Next</span>
             </button>
         </div>
-        <div class="container px-4 py-3" id="custom-cards">
+        <div class="container px-4" id="custom-cards">
             <div class="row row-cols-1 row-cols-lg-3 align-items-stretch g-4 py-5">
                 {% for post in posts %}
                     <div class="col">
@@ -102,23 +66,17 @@
                                     <h3 class="pt-5 mt-5 mb-4 display-6 lh-1 fw-bold">{{ post.title }}</h3>
                                     <ul class="d-flex list-unstyled mt-auto">
                                         <li class="me-auto">
-                                            <img src="https://github.com/twbs.png"
-                                                 alt="Bootstrap"
+                                            <img src="{{ post.user.avatar_image.url }}"
                                                  width="32"
                                                  height="32"
                                                  class="rounded-circle border border-white">
-                                        </li>
-                                        <li class="d-flex align-items-center me-3">
-                                            <svg class="bi me-2" width="1em" height="1em">
-                                                <use xlink:href="#geo-fill" />
-                                            </svg>
-                                            <small>Earth</small>
+                                            <span class="ms-2">{{ post.user.user.username }}</span>
                                         </li>
                                         <li class="d-flex align-items-center">
                                             <svg class="bi me-2" width="1em" height="1em">
                                                 <use xlink:href="#calendar3" />
                                             </svg>
-                                            <small>3d</small>
+                                            <small>{{ post.created_at }}</small>
                                         </li>
                                     </ul>
                                 </div>
