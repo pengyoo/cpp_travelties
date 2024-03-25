@@ -63,6 +63,17 @@ class Post(models.Model):
         ordering = ['-updated_at']
 
 
+# Favor model: map the like relationship between user and post
+class Favor(models.Model):
+    user = models.ForeignKey(
+        UserProfile, on_delete=models.CASCADE, related_name="favors")
+    post = models.ForeignKey(
+        Post, on_delete=models.CASCADE,  related_name="favors")
+
+    def __str__(self):
+        return self.user.user.username + " : " + self.post.title
+
+
 # Comment Model
 class Comment(models.Model):
     user = models.ForeignKey(UserProfile, on_delete=models.CASCADE)

@@ -43,6 +43,8 @@ class HomeView(ListView):
         context['follower_count'] = self.request.user.profile.followers.count()
         context['following_list'] = self.request.user.profile.followings.all(
         ).values_list('following', flat=True)
+        context['favor_list'] = self.request.user.profile.favors.all(
+        ).values_list('post', flat=True)
         return context
 
 
@@ -168,22 +170,40 @@ def FollowView(request):
             follower=follower_user, following=following_user)
         data = {"message": "success"}
         return JsonResponse(data)
+    else:
+        return JsonResponse({"error": "Method is not allowed!"})
+
+
+# Handle unFollow (ajax)
+def UnFollowView(request, user_id):
     if request.method == 'DELETE':
-        user_id = request.DELETE['user_id']
-        models.FollowingRelation.objects.delete(
-            follower__id=request.user.id, following__id=user_id)
+        models.FollowingRelation.objects.filter(
+            follower__id=request.user.profile.id, following__id=user_id).delete()
         data = {"message": "success"}
         return JsonResponse(data)
     else:
         return JsonResponse({"error": "Method is not allowed!"})
 
-# Handle Follow (ajax)
+
+# Handle favor (ajax)
+def FavorView(request):
+    if request.method == 'POST':
+        post_id = request.POST['post_id']
+        user = request.user.profile
+        post = models.Post.objects.get(pk=post_id)
+        models.Favor.objects.get_or_create(
+            post=post, user=user)
+        data = {"message": "success"}
+        return JsonResponse(data)
+    else:
+        return JsonResponse({"error": "Method is not allowed!"})
 
 
-def UnFollowView(request, user_id):
+# Handle favor (ajax)
+def UnFavorView(request, post_id):
     if request.method == 'DELETE':
-        models.FollowingRelation.objects.filter(
-            follower__id=request.user.id, following__id=user_id).delete()
+        models.Favor.objects.filter(
+            user__id=request.user.profile.id, post__id=post_id).delete()
         data = {"message": "success"}
         return JsonResponse(data)
     else:
