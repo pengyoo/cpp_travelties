@@ -45,6 +45,13 @@
               </div>
             </div>
           </div>
+        {% elif not user.is_authenticated %}
+          <div class="card" style="border: none; border-radius: 0%;">
+            <div class="card-header">Welcome!</div>
+            <div class="card-body">
+              <a href="{% url 'signin' %}">Sign In</a> or <a href="{% url 'signup' %}">Sign Up</a> to access more features!
+            </div>
+          </div>
         {% endif %}
         {% block left %}
         {% endblock left %}
@@ -58,45 +65,30 @@
           <div class="card-body">
             <h5 class="card-title">Who to follow</h5>
           </div>
+          {% for follow in who_to_follow %}
           <div class="row mb-3">
             <div class="col-3">
-              <img width="50"
-                   src="https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/avatars/af/af7b38b9b302fb00262847bddf216a0d637382d3_full.jpg" />
+              {% if follow.avatar_image.url %}
+                            <img src="{{ user.profile.avatar_image.url }}"
+                                 alt="mdo"
+                                 width="50"
+                                 height="50" />
+                        {% elif not follow.avatar_image.url %}
+                        <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" class="bi bi-person-bounding-box" viewBox="0 0 16 16">
+                          <path d="M1.5 1a.5.5 0 0 0-.5.5v3a.5.5 0 0 1-1 0v-3A1.5 1.5 0 0 1 1.5 0h3a.5.5 0 0 1 0 1zM11 .5a.5.5 0 0 1 .5-.5h3A1.5 1.5 0 0 1 16 1.5v3a.5.5 0 0 1-1 0v-3a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 1-.5-.5M.5 11a.5.5 0 0 1 .5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 1 0 1h-3A1.5 1.5 0 0 1 0 14.5v-3a.5.5 0 0 1 .5-.5m15 0a.5.5 0 0 1 .5.5v3a1.5 1.5 0 0 1-1.5 1.5h-3a.5.5 0 0 1 0-1h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 1 .5-.5"/>
+                          <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm8-9a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
+                        </svg>
+                        {% endif %}
             </div>
             <div class="col-6">
-              <h6>John Robert</h6>
-              <div style="font-size: 14px; color: gray;">Travel Expert</div>
+              <h6>{{follow.user.username}}</h6>
+              <div style="font-size: 14px; color: gray;">{{follow.slogan}}</div>
             </div>
             <div class="col-3 text-center">
-              <button type="button" class="btn btn-outline-info">+</button>
+              <button onclick="follow({{follow.user.id}})" type="button" class="btn btn-outline-info">+</button>
             </div>
           </div>
-          <div class="row mb-3">
-            <div class="col-3">
-              <img width="50"
-                   src="https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/avatars/af/af7b38b9b302fb00262847bddf216a0d637382d3_full.jpg" />
-            </div>
-            <div class="col-6">
-              <h5>John Robert</h5>
-              <div>Travel Expert</div>
-            </div>
-            <div class="col-3 text-center">
-              <button type="button" class="btn btn-outline-info">+</button>
-            </div>
-          </div>
-          <div class="row mb-3">
-            <div class="col-3">
-              <img width="50"
-                   src="https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/avatars/af/af7b38b9b302fb00262847bddf216a0d637382d3_full.jpg" />
-            </div>
-            <div class="col-6">
-              <h5>John Robert</h5>
-              <div>Travel Expert</div>
-            </div>
-            <div class="col-3 text-center">
-              <button type="button" class="btn btn-outline-info">+</button>
-            </div>
-          </div>
+          {% endfor %}
         </div>
         {% block right %}
         {% endblock right %}

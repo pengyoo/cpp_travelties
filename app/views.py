@@ -3,6 +3,7 @@ from datetime import datetime
 from uuid import uuid4
 from django.shortcuts import render
 from django.views.generic import TemplateView, CreateView, ListView, DetailView, CreateView
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django_filters.views import FilterView
 from django.urls import reverse_lazy
 from django.contrib.auth.models import User
@@ -15,8 +16,11 @@ from . import models
 from . import forms
 from . import filters
 
+LOGIN_URL = '/signin'
 
 # Sign up view: display sign up form and register a user through post request
+
+
 class SignUpView(CreateView):
     template_name = 'signup.html'
     form_class = forms.SignUpForm
@@ -37,14 +41,18 @@ class HomeView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['journal_count'] = models.Post.objects.filter(
-            user=self.request.user.profile).count()
-        context['following_count'] = self.request.user.profile.followings.count()
-        context['follower_count'] = self.request.user.profile.followers.count()
-        context['following_list'] = self.request.user.profile.followings.all(
-        ).values_list('following', flat=True)
-        context['favor_list'] = self.request.user.profile.favors.all(
-        ).values_list('post', flat=True)
+        if self.request.user.is_authenticated:
+            context['journal_count'] = models.Post.objects.filter(
+                user=self.request.user.profile).count()
+            context['following_count'] = self.request.user.profile.followings.count()
+            context['follower_count'] = self.request.user.profile.followers.count()
+            context['following_list'] = self.request.user.profile.followings.all(
+            ).values_list('following', flat=True)
+            context['favor_list'] = self.request.user.profile.favors.all(
+            ).values_list('post', flat=True)
+
+        # who to follow
+        context['who_to_follow'] = models.UserProfile.objects.all()[:10]
         return context
 
 
@@ -63,7 +71,8 @@ class PostListView(ListView):
 
 
 # Create Post (Journal) View
-class PostCreateView(CreateView):
+class PostCreateView(LoginRequiredMixin, CreateView):
+    login_url = LOGIN_URL
     template_name = "post-create.html"
     form_class = forms.PostForm
 
@@ -92,6 +101,10 @@ class PostCreateView(CreateView):
 def CommentCreateView(request):
     if request.method == 'POST':
 
+        # Check if user signed in
+        if not request.user.is_authenticated:
+            return JsonResponse({'error': 'Unauthenticated'}, status=403, safe=False)
+
         form = forms.CommentForm(request.POST)
         if form.is_valid():
             post_id = form.cleaned_data['post_id']
@@ -112,6 +125,11 @@ def CommentCreateView(request):
 # Handle Image uoload
 def ImageUploadView(request):
     if request.method == 'POST':
+
+        # Check if user signed in
+        if not request.user.is_authenticated:
+            return JsonResponse({'error': 'Unauthenticated'}, status=403, safe=False)
+
         image = request.FILES['image']
         object_name = settings.S3_IMAGE_PATH + \
             str(uuid4()) + os.path.splitext(image.name)[1].lower()
@@ -134,6 +152,19 @@ class PostDetailView(DetailView):
     template_name = "post.html"
     model = models.Post
     context_object_name = "post"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.user.is_authenticated:
+            context['journal_count'] = models.Post.objects.filter(
+                user=self.request.user.profile).count()
+            context['following_count'] = self.request.user.profile.followings.count()
+            context['follower_count'] = self.request.user.profile.followers.count()
+            context['following_list'] = self.request.user.profile.followings.all(
+            ).values_list('following', flat=True)
+            context['favor_list'] = self.request.user.profile.favors.all(
+            ).values_list('post', flat=True)
+        return context
 
 
 # Destination List View

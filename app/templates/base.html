@@ -59,7 +59,7 @@
       // Handle django csrf_token
       const csrftoken = Cookies.get('csrftoken');
 
-      const toastTrigger = document.getElementById('liveToastBtn');
+      {% comment %} const toastTrigger = document.getElementById('liveToastBtn'); {% endcomment %}
       const toastLiveExample = document.getElementById('liveToast');
       const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastLiveExample);
 
