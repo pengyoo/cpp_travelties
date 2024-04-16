@@ -10,8 +10,8 @@
 {% block main %}
     <div class="container">
         <div class="card p-3" style="border:none;">
-            <h3>Post a travel journal...</h3>
-            <form class="mt-2" id="post_form" action="{% url 'post_create' %}" method="post">
+            <h3>Add a Destination...</h3>
+            <form class="mt-2" id="post_form" action="{% url 'destination_create' %}" method="post">
                 {% csrf_token %}
                 {% if form.non_field_errors %}
                     <div class="alert alert-danger pt-2 p-0" role="alert">{{ form.non_field_errors }}</div>
@@ -28,15 +28,33 @@
                     <div class="alert alert-danger pt-2 p-0" role="alert">{{ form.title.errors }}</div>
                 {% endif %}
                 <div class="input-group mb-3">
-                    <textarea class="form-control"
-                              placeholder="Summary"
-                              aria-label="summary"
-                              name="summary"
-                              aria-describedby="summary"></textarea>
+                   <select class="form-control" name="continent">
+                    <option value="">... Continent ...</option>
+                    <option value="EU">Europe</option>
+                    <option value="NA">North America</option>
+                    <option value="SA">South America</option>
+                    <option value="AS">Asia</option>
+                    <option value="AF">Africa</option>
+                    <option value="OC">Oceania</option>
+                    <option value="AN">Antarctica</option>
+                   </select>
                 </div>
-                {% if form.summary.errors %}
-                    <div class="alert alert-danger pt-2 p-0" role="alert">{{ form.summary.errors }}</div>
-                {% endif %}
+                {% if form.continent.errors %}
+                <div class="alert alert-danger pt-2 p-0" role="alert">{{ form.continent.errors }}</div>
+                 {% endif %}
+                <div class="input-group mb-3">
+                    <input type="text"
+                           class="form-control"
+                           placeholder="Country"
+                           aria-label="country"
+                           name="country"
+                           aria-describedby="country">
+                </div>
+
+                {% if form.country.errors %}
+                <div class="alert alert-danger pt-2 p-0" role="alert">{{ form.country.errors }}</div>
+                 {% endif %}
+               
                 <div id="editor" class="form-control"></div>
                 {% if form.content.errors %}
                     <div class="alert alert-danger pt-2 p-0" role="alert">{{ form.content.errors }}</div>

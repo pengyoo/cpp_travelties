@@ -97,6 +97,33 @@ class PostCreateView(LoginRequiredMixin, CreateView):
         return reverse_lazy('post_detail', kwargs={'pk': self.object.pk})
 
 
+# Create Destination View
+class DestinationCreateView(LoginRequiredMixin, CreateView):
+    login_url = LOGIN_URL
+    template_name = "destination-create.html"
+    form_class = forms.DestinationForm
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user.profile
+        image_ids = form.cleaned_data.get("image_ids").strip().split(",")
+
+        return_value = super().form_valid(form)
+
+        for id in image_ids:
+            if id:
+                form.instance.images.add(models.Image.objects.get(pk=id))
+
+        return return_value
+
+    # echo form data if data is invalid
+    def form_invalid(self, form):
+        return self.render_to_response(self.get_context_data(form=form))
+
+    # redirect to published destination
+    def get_success_url(self):
+        return reverse_lazy('destination_detail', kwargs={'pk': self.object.pk})
+
+
 # Handle comment create (ajax)
 def CommentCreateView(request):
     if request.method == 'POST':

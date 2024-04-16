@@ -31,6 +31,15 @@ class PostForm(forms.ModelForm):
         fields = ['title', 'summary', 'content']
 
 
+class DestinationForm(forms.ModelForm):
+
+    image_ids = forms.CharField()
+
+    class Meta:
+        model = models.Destination
+        fields = ['title', 'content', 'continent', 'country']
+
+
 class CommentForm(forms.ModelForm):
     post_id = forms.IntegerField()
 

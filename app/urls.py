@@ -19,7 +19,8 @@ urlpatterns = [
          name="destination_list"),
     path('destinations/<int:pk>', views.DestinationDetailView.as_view(),
          name="destination_detail"),
-
+    path('destination_create/', views.DestinationCreateView.as_view(),
+         name="destination_create"),
     path('me/<int:pk>', views.MeDetailView.as_view(), name="me"),
 
     path('signup/', views.SignUpView.as_view(), name='signup'),
