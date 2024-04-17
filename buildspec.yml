@@ -1,0 +1,19 @@
+version: 0.2
+phases:
+    # install python environments and required library for application, install pylint
+    install:
+        runtime-versions:
+            python: 3.11
+        commands:
+            - pip install --upgrade pip
+            # Install dependencies needed for running the static analysis
+            - pip install -r requirements.txt pylint
+            
+    # Run pylint on python files
+    pre_build:
+        commands:
+            - python --version
+            - pylint $CODEBUILD_SRC_DIR/*.py --disable=C,R
+artifacts:
+    files:
+        - '**/*'
