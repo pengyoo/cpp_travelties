@@ -77,7 +77,7 @@ class HomeView(ListView):
                 type__in=preference_list)[:10]
 
         # who to follow
-        context['who_to_follow'] = models.UserProfile.objects.all()[:6]
+        context['who_to_follow'] = models.UserProfile.objects.all().order_by("-id")[:6]
 
         return context
 
