@@ -45,6 +45,10 @@ class PreferedDestinationType(models.Model):
     def __str__(self):
         return self.user.user.username + ":" + self.prefered_destination_type
 
+    # a user can only have the same preference once
+    class Meta:
+        unique_together = ('user', 'prefered_destination_type')
+
 
 # Following Relation Model
 class FollowingRelation(models.Model):

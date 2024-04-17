@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+{% block main %}
+    <main>
+        <div class="container pb-3" id="custom-cards">
+            <h3 class="text-center">Follow Travellers ...</h3>
+            <div class="row row-cols-1 row-cols-lg-4 align-items-stretch g-4 pb-5 pt-3">
+                {% for u in users %}
+                    <div class="col">
+                        
+                            <div class="card" style="border: none; border-radius: 0%;">
+                                <div class="mt-3 mb-3 text-center">
+                                  <div class="mb-2">
+                                    {% if u.id not in following_list %}
+                                    <button class="btn btn-secondary btn-small"
+                                            onclick="follow({{ u.user.id }})"
+                                            style="height:25px;
+                                                  padding-top:1px;
+                                                  padding-bottom:1px">Follow</button>
+                                    {% elif u.id in following_list %}
+                                      <button class="btn btn-secondary btn-small"
+                                              onclick="unfollow({{ u.user.id }})"
+                                              style="height:25px;
+                                                    padding-top:1px;
+                                                    padding-bottom:1px">Unfollow</button>
+                                    {% endif %}
+                                  </div>
+                                  <a class="nav-link" href="{% url 'me' user.id %}">
+                                    {% if u.avatar_image.url %}
+                                      <img src="{{ u.avatar_image.url }}"
+                                          alt="mdo"
+                                          width="80"
+                                          height="80" />
+                                    {% elif not u.avatar_image.url %}
+                                      <svg xmlns="http://www.w3.org/2000/svg"
+                                          width="80"
+                                          height="80"
+                                          fill="currentColor"
+                                          class="bi bi-person-circle"
+                                          viewBox="0 0 16 16">
+                                        <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0" />
+                                        <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1" />
+                                      </svg>
+                                    {% endif %}
+                                  </a>
+                                  <div class="mt-2" style="font-size: 18; font-weight: bolder;">
+                                    {{ u.user.username }}
+                                  </div>
+                                  <div class="mt-3" style="color:#444444; font-size: 14px;">{{ u.slogan }}</div>
+                                  {% comment %} <div class="row mt-4 m-2" style="font-size: 12px; color:#444444;">
+                                    <div class="col">
+                                      <span style="color: black; font-size: 14px; font-weight: bolder;">{{ journal_count }}</span>
+                                      <br />
+                                      Journals
+                                    </div>
+                                    <div class="col">
+                                      <span style="color: black; font-size: 14px; font-weight: bolder;">{{ following_count }}</span>
+                                      <br />
+                                      Followings
+                                    </div>
+                                    <div class="col">
+                                      <span style="color: black; font-size: 14px; font-weight: bolder;">{{ follower_count }}</span>
+                                      <br />
+                                      Followers
+                                    </div>
+                                  </div> {% endcomment %}
+                                </div>
+                              </div>    
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="d-flex justify-content-end">
+                <div class="float-right">
+                    <ul class="pagination pagination-md">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}">&laquo;</a>
+                            </li>
+                        {% elif not page_obj.has_previous %}
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#">&laquo;</a>
+                            </li>
+                        {% endif %}
+                        {% for page in page_obj.paginator.page_range %}
+                            {% if page == page_obj.number %}
+                                <li class="page-item active">
+                                    <a class="page-link" href="?page={{ page }}">{{ page }}</a>
+                                </li>
+                            {% elif page != page_obj.number %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page }}">{{ page }}</a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                        {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.next_page_number }}">&raquo;</a>
+                            </li>
+                        {% elif not page_obj.has_next %}
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#">&raquo;</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </main>
+{% endblock main %}
+{% block script %}
+    <script>
+        // Filter by continent by replace url when users switch dropdown menu
+       
+        const continent_dropdown = document.getElementById("continent_dropdown");
+        console.log(continent_dropdown);
+
+        const filter_by_continent = (value) => {
+            const location = window.location;
+            let url = location.protocol + '//' + location.host + location.pathname;
+            if(value != 'All') {
+                url = url + "?continent="+value;
+            }
+            window.location.href = url;
+        }
+
+
+  const follow = (user_id) => {
+    const fd = new FormData();
+        fd.append('user_id', user_id);
+       axios.post("{% url 'follow' %}", fd,  {
+            headers: {
+            'X-CSRFToken': csrftoken,
+            }
+          }).then(resp => {
+            console.log(resp)
+            $("#toast-body").html("Successfully followed!");
+            toastBootstrap.show();
+        }).catch(e=>{
+          const message = JSON.parse(e.response.data);
+          console.log(message);
+          $("#toast-body").html(message);
+          toastBootstrap.show();
+        }); 
+    }
+
+    const unfollow = (user_id) => {
+         axios.delete("/unfollow/" + user_id,  {
+              headers: {
+              'X-CSRFToken': csrftoken,
+              }
+            }).then(resp => {
+              console.log(resp)
+              $("#toast-body").html("Successfully unfollowed!");
+              toastBootstrap.show();
+          }).catch(e=>{
+            const message = JSON.parse(e.response.data);
+            console.log(message);
+            $("#toast-body").html(message);
+            toastBootstrap.show();
+          }); 
+      }
+    </script>
+{% endblock script %}

@@ -54,6 +54,32 @@
                 {% if form.country.errors %}
                 <div class="alert alert-danger pt-2 p-0" role="alert">{{ form.country.errors }}</div>
                  {% endif %}
+
+                 <div class="input-group mb-3">
+                    <input type="text"
+                           class="form-control"
+                           placeholder="City"
+                           aria-label="city"
+                           name="city"
+                           aria-describedby="councitytry">
+                </div>
+                {% if form.city.errors %}
+                <div class="alert alert-danger pt-2 p-0" role="alert">{{ form.city.errors }}</div>
+                 {% endif %}
+
+                 <div class="input-group mb-3">
+                    <select class="form-control" name="type">
+                     <option value="">... Choose a type ...</option>
+                     <option value="Seaside">Seaside</option>
+                     <option value="Mountain">Mountain</option>
+                     <option value="Beach">Beach</option>
+                     <option value="Cultural">Cultural</option>
+                     <option value="Lake">Lake</option>
+                    </select>
+                 </div>
+                 {% if form.type.errors %}
+                 <div class="alert alert-danger pt-2 p-0" role="alert">{{ form.type.errors }}</div>
+                  {% endif %}
                
                 <div id="editor" class="form-control"></div>
                 {% if form.content.errors %}

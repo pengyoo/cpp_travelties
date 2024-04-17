@@ -15,12 +15,16 @@ urlpatterns = [
     path('unfollow/<int:user_id>', views.UnFollowView, name="unfollow"),
     path('favor/', views.FavorView, name="favor"),
     path('unfavor/<int:post_id>', views.UnFavorView, name="unfavor"),
+    path('destinations_all/', views.DestinationAllListView.as_view(),
+         name="destination_list_all"),
     path('destinations/', views.DestinationListView.as_view(),
          name="destination_list"),
     path('destinations/<int:pk>', views.DestinationDetailView.as_view(),
          name="destination_detail"),
     path('destination_create/', views.DestinationCreateView.as_view(),
          name="destination_create"),
+
+    path('users/', views.UserListView.as_view(), name="user_list"),
     path('me/<int:pk>', views.MeDetailView.as_view(), name="me"),
 
     path('preference_add/', views.addPreference, name="preference_add"),

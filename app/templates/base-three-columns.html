@@ -5,7 +5,10 @@
       <div class="col-lg-3">
         {% if user.is_authenticated %}
           <div class="card" style="border: none; border-radius: 0%;">
-            <div class="mt-5 mb-5 text-center">
+            <div class="card-body">
+              <h5 class="card-title">About Me</h5>
+            </div>
+            <div class="mb-2 text-center">
               <a class="nav-link" href="{% url 'me' user.id %}">
                 {% if user.profile.avatar_image.url %}
                   <img src="{{ user.profile.avatar_image.url }}"
@@ -53,36 +56,34 @@
             </div>
           </div>
         {% endif %}
-        {% block left %}
-        {% endblock left %}
-      </div>
-      <div class="col-lg-6">
-        {% block center %}
-        {% endblock center %}
-      </div>
-      <div class="col-lg-3">
-        <div class="card ps-3 pe-3 pt-2" style="border: none; border-radius: 0%;">
+
+        <div class="card mt-3 ps-3 pe-3 pt-2" style="border: none; border-radius: 0%;">
           <div class="card-body">
             <h5 class="card-title">Who to follow</h5>
           </div>
           {% for follow in who_to_follow %}
           <div class="row mb-3">
+            
             <div class="col-3">
-              {% if follow.avatar_image.url %}
-                            <img src="{{ follow.avatar_image.url }}"
-                                 alt="mdo"
-                                 width="50"
-                                 height="50" />
-                        {% elif not follow.avatar_image.url %}
-                        <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" class="bi bi-person-bounding-box" viewBox="0 0 16 16">
-                          <path d="M1.5 1a.5.5 0 0 0-.5.5v3a.5.5 0 0 1-1 0v-3A1.5 1.5 0 0 1 1.5 0h3a.5.5 0 0 1 0 1zM11 .5a.5.5 0 0 1 .5-.5h3A1.5 1.5 0 0 1 16 1.5v3a.5.5 0 0 1-1 0v-3a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 1-.5-.5M.5 11a.5.5 0 0 1 .5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 1 0 1h-3A1.5 1.5 0 0 1 0 14.5v-3a.5.5 0 0 1 .5-.5m15 0a.5.5 0 0 1 .5.5v3a1.5 1.5 0 0 1-1.5 1.5h-3a.5.5 0 0 1 0-1h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 1 .5-.5"/>
-                          <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm8-9a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
-                        </svg>
-                        {% endif %}
+              <a href="{% url 'me' follow.user.id %}" class="nav-link">
+                {% if follow.avatar_image.url %}
+                    <img src="{{ follow.avatar_image.url }}"
+                        alt="mdo"
+                        width="50"
+                        height="50" />
+                {% elif not follow.avatar_image.url %}
+                <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" class="bi bi-person-bounding-box" viewBox="0 0 16 16">
+                  <path d="M1.5 1a.5.5 0 0 0-.5.5v3a.5.5 0 0 1-1 0v-3A1.5 1.5 0 0 1 1.5 0h3a.5.5 0 0 1 0 1zM11 .5a.5.5 0 0 1 .5-.5h3A1.5 1.5 0 0 1 16 1.5v3a.5.5 0 0 1-1 0v-3a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 1-.5-.5M.5 11a.5.5 0 0 1 .5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 1 0 1h-3A1.5 1.5 0 0 1 0 14.5v-3a.5.5 0 0 1 .5-.5m15 0a.5.5 0 0 1 .5.5v3a1.5 1.5 0 0 1-1.5 1.5h-3a.5.5 0 0 1 0-1h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 1 .5-.5"/>
+                  <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm8-9a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
+                </svg>
+                {% endif %}
+              </a>
             </div>
             <div class="col-6">
-              <h6>{{follow.user.username}}</h6>
-              <div style="font-size: 14px; color: gray;">{{follow.slogan}}</div>
+              <a href="{% url 'me' follow.user.id %}" class="nav-link">
+                <h6>{{follow.user.username}}</h6>
+                <div style="font-size: 14px; color: gray;">{{follow.slogan}}</div>
+              </a>
             </div>
             <div class="col-3 text-center">
               <button onclick="follow({{follow.user.id}})" type="button" class="btn btn-outline-info">+</button>
@@ -91,20 +92,32 @@
           {% endfor %}
             
         </div>
-
-        <div class="mt-3 card" style="border: none; border-radius: 0%;">
+        {% block left %}
+        {% endblock left %}
+      </div>
+      <div class="col-lg-6">
+        {% block center %}
+        {% endblock center %}
+      </div>
+      <div class="col-lg-3">
+        <div class=" card" style="border: none; border-radius: 0%;">
           <div class="card-body">
             <h5 class="card-title">Destination Recommendations</h5>
+            {% if recommendations %}
             <div class="row row-cols-1 row-cols-lg-2 align-items-stretch g-4 pb-5 pt-3">
-              {% for destination in recommendations %}
-                  <div class="col text-center">
-                      <a class="nav-link" href="{% url 'destination_detail' destination.id %}">
-                        <img width="120" src="{{ destination.images.first.url }}" />
-                        <div>{{destination.title}}</div>    
-                      </a>
-                  </div>
-              {% endfor %}
+              
+                {% for destination in recommendations %}
+                    <div class="col text-center">
+                        <a class="nav-link" href="{% url 'destination_detail' destination.id %}">
+                          <img width="120" height="90" class="object-fit-cover" src="{{ destination.images.first.url }}" />
+                          <div>{{destination.title}}</div>    
+                        </a>
+                    </div>
+                {% endfor %}
           </div>
+          {% elif not recommendations%}
+              <div> Sign in and add your prefered destination types to get personalized recommendations!</div>
+              {% endif %}
           </div>
         {% block right %}
         {% endblock right %}

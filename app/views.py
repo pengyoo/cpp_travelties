@@ -1,6 +1,8 @@
 import os
 from datetime import datetime
 from uuid import uuid4
+from django.db import IntegrityError
+from django.db.models.query import QuerySet
 from django.shortcuts import render
 from django.views.generic import TemplateView, CreateView, ListView, DetailView, CreateView
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -11,6 +13,7 @@ from django.http import JsonResponse
 from django.conf import settings
 from django.utils import formats
 from django.db.models import Count
+
 from .utils import upload_file
 from . import models
 from . import forms
@@ -37,7 +40,17 @@ class HomeView(ListView):
     model = models.Post
     context_object_name = "posts"
     paginate_by = 10
-    queryset = models.Post.objects.select_related("user").all()
+
+    def get_queryset(self):
+        if self.request.user.is_authenticated:
+            following_relationship = models.FollowingRelation.objects.filter(
+                follower=self.request.user.profile)
+            followings = []
+            for f in following_relationship:
+                followings.append(f.following)
+            return models.Post.objects.select_related("user").filter(user__in=followings)
+        else:
+            return models.Post.objects.select_related("user").all()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -60,7 +73,7 @@ class HomeView(ListView):
             for preference in preferences:
                 preference_list.append(preference.prefered_destination_type)
             context['recommendations'] = models.Destination.objects.filter(
-                type__in=preference_list)
+                type__in=preference_list)[:10]
 
         # who to follow
         context['who_to_follow'] = models.UserProfile.objects.all()[:10]
@@ -79,6 +92,31 @@ class PostListView(ListView):
         context = super().get_context_data(**kwargs)
         context['top_posts'] = models.Post.objects.filter(
             images__isnull=False).order_by("created_at")[:3]
+        return context
+
+
+# Post (Journal) List View
+class UserListView(ListView):
+    template_name = "users.html"
+    model = models.UserProfile
+    context_object_name = "users"
+    paginate_by = 12
+
+    def get_queryset(self):
+        return models.UserProfile.objects.all()
+    # .aggregate(
+    #         following_count=Count('followings__following'),
+    #         follower_count=Count('followings__follower'),
+    #         journal_count=Count('posts'))
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        if self.request.user.is_authenticated:
+            # following data
+            context['following_list'] = self.request.user.profile.followings.all(
+            ).values_list('following', flat=True)
+
         return context
 
 
@@ -207,12 +245,67 @@ class PostDetailView(DetailView):
 
 
 # Destination List View
-class DestinationListView(FilterView):
-    template_name = "destinations.html"
+class DestinationAllListView(FilterView):
+    template_name = "destinations-all.html"
     model = models.Destination
     context_object_name = "destinations"
     paginate_by = 10
     filterset_class = filters.DestinationFilter
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        if self.request.user.is_authenticated:
+
+            # destination recommendations
+            preferences = models.PreferedDestinationType.objects.filter(
+                user=self.request.user.profile)
+            preference_list = []
+            for preference in preferences:
+                preference_list.append(preference.prefered_destination_type)
+            context['recommendations'] = models.Destination.objects.filter(
+                type__in=preference_list)[:6]
+
+        # Top 10 destinations
+        context['top10'] = models.Destination.objects.all().order_by(
+            '-rating')[:6]
+
+        # Top 10 destinations
+        context['bottom10'] = models.Destination.objects.all().order_by(
+            'rating')[:6]
+
+        return context
+
+
+# Destination List View
+class DestinationListView(ListView):
+    template_name = "destinations.html"
+    context_object_name = "top10"
+
+    # Top 6 popular destinations
+    def get_queryset(self):
+        return models.Destination.objects.all().order_by(
+            '-rating')[:6]
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        if self.request.user.is_authenticated:
+
+            # destination recommendations
+            preferences = models.PreferedDestinationType.objects.filter(
+                user=self.request.user.profile)
+            preference_list = []
+            for preference in preferences:
+                preference_list.append(preference.prefered_destination_type)
+            context['recommendations'] = models.Destination.objects.filter(
+                type__in=preference_list)[:6]
+
+        # Bottom 10 destinations
+        context['bottom10'] = models.Destination.objects.all().order_by(
+            'rating')[:6]
+
+        return context
 
 
 # Destination Detail View
@@ -240,6 +333,16 @@ class MeDetailView(DetailView):
     template_name = "me.html"
     model = User
     context_object_name = "me"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        if self.request.user.is_authenticated:
+            # following data
+            context['following_list'] = self.request.user.profile.followings.all(
+            ).values_list('following', flat=True)
+
+        return context
 
 
 # Handle Follow (ajax)
@@ -296,10 +399,13 @@ def UnFavorView(request, post_id):
 # Handle Add preference (ajax)
 def addPreference(request):
     if request.method == 'POST':
-        models.PreferedDestinationType.objects.create(
-            user=request.user.profile, prefered_destination_type=request.POST['preference'])
-        data = {"message": "success"}
-        return JsonResponse(data)
+        try:
+            models.PreferedDestinationType.objects.create(
+                user=request.user.profile, prefered_destination_type=request.POST['preference'])
+            data = {"message": "success"}
+            return JsonResponse(data)
+        except IntegrityError:
+            return JsonResponse({"message": "You already add this preference!"})
     else:
         return JsonResponse({"error": "Method is not allowed!"})
 

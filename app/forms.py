@@ -37,7 +37,7 @@ class DestinationForm(forms.ModelForm):
 
     class Meta:
         model = models.Destination
-        fields = ['title', 'content', 'continent', 'country']
+        fields = ['title', 'content', 'continent', 'country', 'city', 'type']
 
 
 class CommentForm(forms.ModelForm):

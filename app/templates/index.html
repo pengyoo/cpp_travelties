@@ -9,11 +9,12 @@
       <span onclick="addPreference('Mountain')" class="badge text-bg-secondary" role="button">Mountain</span>
       <span onclick="addPreference('Beach')" class="badge text-bg-secondary" role="button">Beach</span>
       <span onclick="addPreference('Seaside')" class="badge text-bg-secondary" role="button">Seaside</span>
+      <span onclick="addPreference('Lake')" class="badge text-bg-secondary" role="button">Lake</span>
     </div>
   </div>
   {% endif %}
 
-  <a class="nav-link mt-3" href="{% url 'post_create' %}">
+  <a class="nav-link {% if user.is_authenticated%} mt-3 {% endif %}" href="{% url 'post_create' %}">
     <div class="card ps-3 pe-3 pt-2" style="border: none; border-radius: 0%">
       <div class="card-body">
         <div class="d-flex justify-content-start">
@@ -266,6 +267,8 @@
             }
           }).then(resp => {
             console.log(resp)
+            $("#toast-body").html("Successfully followed!");
+            toastBootstrap.show();
         }).catch(e=>{
           const message = JSON.parse(e.response.data);
           console.log(message);
@@ -281,6 +284,8 @@
               }
             }).then(resp => {
               console.log(resp)
+              $("#toast-body").html("Successfully unfollowed!");
+              toastBootstrap.show();
           }).catch(e=>{
             const message = JSON.parse(e.response.data);
             console.log(message);
