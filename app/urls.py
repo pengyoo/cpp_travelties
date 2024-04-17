@@ -23,6 +23,9 @@ urlpatterns = [
          name="destination_create"),
     path('me/<int:pk>', views.MeDetailView.as_view(), name="me"),
 
+    path('preference_add/', views.addPreference, name="preference_add"),
+    path('destination_rate/<int:destination_id>',
+         views.rateDestination, name="destination_rate"),
     path('signup/', views.SignUpView.as_view(), name='signup'),
     path('signin/', auth_views.LoginView.as_view(template_name='signin.html'), name='signin'),
     path('signout/', auth_views.LogoutView.as_view(next_page=reverse_lazy('home')), name='signout'),

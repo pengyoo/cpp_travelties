@@ -41,7 +41,9 @@ class HomeView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+
         if self.request.user.is_authenticated:
+            # following data
             context['journal_count'] = models.Post.objects.filter(
                 user=self.request.user.profile).count()
             context['following_count'] = self.request.user.profile.followings.count()
@@ -51,8 +53,18 @@ class HomeView(ListView):
             context['favor_list'] = self.request.user.profile.favors.all(
             ).values_list('post', flat=True)
 
+            # destination recommendations
+            preferences = models.PreferedDestinationType.objects.filter(
+                user=self.request.user.profile)
+            preference_list = []
+            for preference in preferences:
+                preference_list.append(preference.prefered_destination_type)
+            context['recommendations'] = models.Destination.objects.filter(
+                type__in=preference_list)
+
         # who to follow
         context['who_to_follow'] = models.UserProfile.objects.all()[:10]
+
         return context
 
 
@@ -209,6 +221,19 @@ class DestinationDetailView(DetailView):
     model = models.Destination
     context_object_name = "destination"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.user.is_authenticated:
+            context['journal_count'] = models.Post.objects.filter(
+                user=self.request.user.profile).count()
+            context['following_count'] = self.request.user.profile.followings.count()
+            context['follower_count'] = self.request.user.profile.followers.count()
+            context['following_list'] = self.request.user.profile.followings.all(
+            ).values_list('following', flat=True)
+            context['favor_list'] = self.request.user.profile.favors.all(
+            ).values_list('post', flat=True)
+        return context
+
 
 # Destination Detail View
 class MeDetailView(DetailView):
@@ -262,6 +287,30 @@ def UnFavorView(request, post_id):
     if request.method == 'DELETE':
         models.Favor.objects.filter(
             user__id=request.user.profile.id, post__id=post_id).delete()
+        data = {"message": "success"}
+        return JsonResponse(data)
+    else:
+        return JsonResponse({"error": "Method is not allowed!"})
+
+
+# Handle Add preference (ajax)
+def addPreference(request):
+    if request.method == 'POST':
+        models.PreferedDestinationType.objects.create(
+            user=request.user.profile, prefered_destination_type=request.POST['preference'])
+        data = {"message": "success"}
+        return JsonResponse(data)
+    else:
+        return JsonResponse({"error": "Method is not allowed!"})
+
+
+# Rate a destination (ajax)
+def rateDestination(request, destination_id):
+    if request.method == 'POST':
+        rating = request.POST['rating']
+        destination = models.Destination.objects.get(pk=destination_id)
+        models.DestinationRating.objects.create(
+            user=request.user.profile, destination=destination, rating=rating)
         data = {"message": "success"}
         return JsonResponse(data)
     else:

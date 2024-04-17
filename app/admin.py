@@ -2,7 +2,11 @@ from django.contrib import admin
 from . import models
 
 
+admin.site.register(models.PreferedDestinationType)
+
 # register Image to admin
+
+
 @admin.register(models.Image)
 class ImageAdmin(admin.ModelAdmin):
     list_display = ['title', 'description', 'sort', 'url', 'type']

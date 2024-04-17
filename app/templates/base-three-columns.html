@@ -89,7 +89,23 @@
             </div>
           </div>
           {% endfor %}
+            
         </div>
+
+        <div class="mt-3 card" style="border: none; border-radius: 0%;">
+          <div class="card-body">
+            <h5 class="card-title">Destination Recommendations</h5>
+            <div class="row row-cols-1 row-cols-lg-2 align-items-stretch g-4 pb-5 pt-3">
+              {% for destination in recommendations %}
+                  <div class="col text-center">
+                      <a class="nav-link" href="{% url 'destination_detail' destination.id %}">
+                        <img width="120" src="{{ destination.images.first.url }}" />
+                        <div>{{destination.title}}</div>    
+                      </a>
+                  </div>
+              {% endfor %}
+          </div>
+          </div>
         {% block right %}
         {% endblock right %}
       </div>

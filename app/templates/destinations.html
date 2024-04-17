@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block main %}
     <main>
-        <div class="container mt-3">
+        <div class="container mt-3 d-flex justify-content-between">
             <div class="dropdown">
                 <button class="btn btn-light dropdown-toggle"
                         style="border: #eeeeee;
@@ -53,6 +53,8 @@
                     </li>
                 </ul>
             </div>
+
+            <a href="{% url 'destination_create' %}"><button class="btn btn-primary">Add a destination</button></a>
         </div>
         <div class="container pb-3" id="custom-cards">
             <div class="row row-cols-1 row-cols-lg-3 align-items-stretch g-4 pb-5 pt-3">
@@ -65,9 +67,15 @@
                                         text-shadow: 2px 2px #333333">
                                 <div class="d-flex flex-column h-100 p-5 pb-3 text-white text-shadow-1">
                                     <h3 class="pt-5 mt-5 mb-4 display-6 lh-1 fw-bold">{{ destination.title }}</h3>
-                                    <ul class="d-flex list-unstyled mt-auto">
+                                    <ul class="d-flex list-unstyled mt-auto justify-content-between">
                                         <li class="d-flex align-items-center">
                                             <small>{{ destination.city }}, {{ destination.country }}, {{ destination.continent }}</small>
+                                        </li>
+                                        <li class="d-flex align-items-center">
+                                            <small>{{ destination.type }}</small>
+                                        </li>
+                                        <li class="d-flex align-items-center">
+                                            <span class="badge text-bg-warning" style="font-size: 14px;">Rating: {{destination.rating}}</span>
                                         </li>
                                     </ul>
                                 </div>

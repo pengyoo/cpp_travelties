@@ -36,6 +36,16 @@ class UserProfile(models.Model):
         return self.user.username
 
 
+# Prefered Destination Type Model
+class PreferedDestinationType(models.Model):
+    user = models.ForeignKey(
+        UserProfile, on_delete=models.CASCADE, related_name="preferences")
+    prefered_destination_type = models.CharField(max_length=100, blank=True)
+
+    def __str__(self):
+        return self.user.user.username + ":" + self.prefered_destination_type
+
+
 # Following Relation Model
 class FollowingRelation(models.Model):
     follower = models.ForeignKey(
@@ -93,9 +103,11 @@ class Comment(models.Model):
 class Destination(models.Model):
     user = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
+    type = models.CharField(max_length=100, blank=True)
     content = models.TextField()
     images = models.ManyToManyField(Image)
     created_at = models.DateTimeField(auto_now_add=True)
+    rating = models.IntegerField(default=0)
 
     CONTINENT_CHOICES = (
         ('NA', 'North America'),
@@ -115,3 +127,10 @@ class Destination(models.Model):
 
     class Meta:
         ordering = ['-created_at']
+
+
+# DestinationRating model
+class DestinationRating(models.Model):
+    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
+    destination = models.ForeignKey(Destination, on_delete=models.CASCADE)
+    rating = models.IntegerField()

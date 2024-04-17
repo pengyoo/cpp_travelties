@@ -1,6 +1,19 @@
 {% extends "base-three-columns.html" %}
 {% block center %}
-  <a class="nav-link" href="{% url 'post_create' %}">
+
+  {% if user.is_authenticated%}
+  <div class="card" style="border: none; border-radius: 0%">
+    <div class="card-body">
+      <h5>What type of destinations do you prefer?</h5>
+      <span onclick="addPreference('Cultural')" class="badge text-bg-secondary" role="button">Cultural</span>
+      <span onclick="addPreference('Mountain')" class="badge text-bg-secondary" role="button">Mountain</span>
+      <span onclick="addPreference('Beach')" class="badge text-bg-secondary" role="button">Beach</span>
+      <span onclick="addPreference('Seaside')" class="badge text-bg-secondary" role="button">Seaside</span>
+    </div>
+  </div>
+  {% endif %}
+
+  <a class="nav-link mt-3" href="{% url 'post_create' %}">
     <div class="card ps-3 pe-3 pt-2" style="border: none; border-radius: 0%">
       <div class="card-body">
         <div class="d-flex justify-content-start">
@@ -311,5 +324,24 @@
              toastBootstrap.show();
            }); 
        }
+
+       const addPreference = (preference) => {
+        const fd = new FormData();
+            fd.append('preference', preference);
+           axios.post("{% url 'preference_add' %}", fd,  {
+                headers: {
+                'X-CSRFToken': csrftoken,
+                }
+              }).then(resp => {
+                console.log(resp)
+                $("#toast-body").html("Successfully added to my preferences!");
+                toastBootstrap.show();
+            }).catch(e=>{
+              const message = JSON.parse(e.response.data);
+              console.log(message);
+              $("#toast-body").html(message);
+              toastBootstrap.show();
+            }); 
+        }
   </script>
 {% endblock %}
