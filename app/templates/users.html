@@ -28,6 +28,7 @@
                                     {% if u.avatar_image.url %}
                                       <img src="{{ u.avatar_image.url }}"
                                           alt="mdo"
+                                          class="object-fit-cover"
                                           width="80"
                                           height="80" />
                                     {% elif not u.avatar_image.url %}

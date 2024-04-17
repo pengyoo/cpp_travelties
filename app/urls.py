@@ -26,6 +26,7 @@ urlpatterns = [
 
     path('users/', views.UserListView.as_view(), name="user_list"),
     path('me/<int:pk>', views.MeDetailView.as_view(), name="me"),
+    path('profile_update/', views.updateProfile, name="profile_update"),
 
     path('preference_add/', views.addPreference, name="preference_add"),
     path('destination_rate/<int:destination_id>',

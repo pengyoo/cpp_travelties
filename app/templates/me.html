@@ -2,6 +2,11 @@
 {% block main %}
     <div class="container">
         <div class="card" style="border: none; border-radius: 0%">
+            {% if user.is_authenticated %}
+            <div class="text-end m-2 p-2">
+                <button class="btn btn-secondary btn-info p-0 ps-2 pe-2" data-bs-toggle="modal" data-bs-target="#exampleModal" >Edit Profile</button>
+            </div>
+            {% endif %}
             <div class="text-center mt-3">
                 {% if me.id not in following_list %}
                 <button class="btn btn-secondary btn-small"
@@ -23,7 +28,7 @@
                          alt="mdo"
                          width="120"
                          height="120"
-                         class="rounded-circle" />
+                         class="rounded-circle object-fit-cover" />
                 {% elif not me.profile.avatar_image.url %}
                     <svg xmlns="http://www.w3.org/2000/svg"
                          width="80"
@@ -106,7 +111,8 @@
                                                             <img src="{{ post.user.avatar_image.url }}"
                                                                  width="32"
                                                                  height="32"
-                                                                 class="rounded-circle border border-white">
+                                                            
+                                                                 class="object-fit-cover rounded-circle border border-white">
                                                             <span class="ms-2">{{ post.user.user.username }}</span>
                                                         </li>
                                                         <li class="d-flex align-items-center">
@@ -136,6 +142,7 @@
                                                 {% if follower.follower.avatar_image.url %}
                                                     <img src="{{ follower.follower.avatar_image.url }}"
                                                          alt="mdo"
+                                                         class="object-fit-cover"
                                                          width="80"
                                                          height="80" />
                                                 {% elif not follower.follower.avatar_image.url %}
@@ -170,6 +177,7 @@
                                                 {% if following.following.avatar_image.url %}
                                                     <img src="{{ following.following.avatar_image.url }}"
                                                          alt="mdo"
+                                                         class="object-fit-cover"
                                                          width="80"
                                                          height="80" />
                                                 {% elif not following.following.avatar_image.url %}
@@ -196,6 +204,37 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form onsubmit="updateProfile(event)">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+            
+                    <input type="file" class="form-control mb-3" name="avatar" id="avatar" placeholder="Avatar">
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" name="slogan" id="slogan" placeholder="Slogan">
+                        <label for="slogan">Slogan</label>
+                    </div>
+                    <div class="form-floating">
+                        <textarea type="text" class="form-control" name="profile" rows="3" id="profile" placeholder="Profile"></textarea>
+                        <label for="profile">Profile</label>
+                    </div>
+                
+            </div>
+            <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+        </form>
+        </div>
+  </div>
 {% endblock main %}
 {% block script %}
   <script>
@@ -231,6 +270,24 @@
             $("#toast-body").html(message);
             toastBootstrap.show();
           }); 
+      }
+
+      const updateProfile = (event) => {
+        event.preventDefault();
+        console.log('submit')
+        const form = event.target;
+        const formData = new FormData(form);
+        console.log(formData);
+        axios.post("{% url 'profile_update' %}", formData, {
+            headers: {
+                'X-CSRFToken': csrftoken,
+                'Content-Type': 'multipart/form-data',
+            }
+        }).then((resp)=>{
+            console.log(resp.data);
+            window.location.reload();
+        });
+
       }
     </script>
 {% endblock script %}

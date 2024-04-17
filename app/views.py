@@ -76,7 +76,7 @@ class HomeView(ListView):
                 type__in=preference_list)[:10]
 
         # who to follow
-        context['who_to_follow'] = models.UserProfile.objects.all()[:5]
+        context['who_to_follow'] = models.UserProfile.objects.all()[:6]
 
         return context
 
@@ -419,5 +419,32 @@ def rateDestination(request, destination_id):
             user=request.user.profile, destination=destination, rating=rating)
         data = {"message": "success"}
         return JsonResponse(data)
+    else:
+        return JsonResponse({"error": "Method is not allowed!"})
+
+
+# Update a user profile (ajax)
+def updateProfile(request):
+    if request.method == 'POST':
+        if request.user.is_authenticated:
+            slogan = request.POST['slogan']
+            profile = request.POST['profile']
+            avatar = request.FILES['avatar']
+
+            object_name = settings.S3_IMAGE_PATH + \
+                str(uuid4()) + os.path.splitext(avatar.name)[1].lower()
+            image_url = upload_file(avatar, object_name)
+
+            # Save image object
+            image_saved = models.Image.objects.create(
+                title=os.path.splitext(avatar.name)[0], url=image_url)
+
+            request.user.profile.slogan = slogan
+            request.user.profile.profile = profile
+            request.user.profile.avatar_image = image_saved
+            request.user.profile.save()
+
+            data = {"message": "success"}
+            return JsonResponse(data)
     else:
         return JsonResponse({"error": "Method is not allowed!"})
