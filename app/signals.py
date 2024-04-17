@@ -2,6 +2,8 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.contrib.auth.models import User
 from django.db.models import Avg
+from django.conf import settings
+import boto3
 from .models import UserProfile
 from .models import DestinationRating
 from .models import Destination
@@ -22,3 +24,35 @@ def update_rating(sender, instance, created, **kwargs):
             avg_rating=Avg('rating'))['avg_rating']
         Destination.objects.filter(
             pk=instance.destination.id).update(rating=avg_rating)
+
+
+# use signal to send sns message when a user add a destination
+@receiver(post_save, sender=Destination)
+def send_confirmation_email(sender, instance, created, **kwargs):
+    if created:
+
+        admin = User.objects.first()
+        message = f"Hi, {
+            admin.username}! A new destination '{instance.title}' added by {instance.user.user.username}, please review it."
+
+        # publish message to sns
+        sns = boto3.client('sns')
+        response = sns.publish(
+            TopicArn=settings.SNS_TOPIC_ARN,
+            Message=message,
+            Subject=f"A new destination '{
+                instance.title}' added, please review",
+            MessageAttributes={
+                'email': {
+                    'DataType': 'String',
+                    'StringValue': admin.email
+                }
+            }
+        )
+
+        # send email to admin
+        subscribe_response = sns.subscribe(
+            TopicArn=settings.SNS_TOPIC_ARN,
+            Protocol='email',
+            Endpoint=admin.email
+        )

@@ -131,3 +131,7 @@ LOGIN_REDIRECT_URL = '/'
 # AWS s3
 S3_BUCKET = 'elasticbeanstalk-eu-west-1-845708981828'
 S3_IMAGE_PATH = 'images/travelties/'
+
+# AWS SNS
+# SNS_TOPIC_ARN = 'arn:aws:sns:eu-west-1:250738637992:x22196242-travelties'
+SNS_TOPIC_ARN = 'arn:aws:sns:eu-west-1:845708981828:travelties'
