@@ -46,6 +46,7 @@ class HomeView(ListView):
             following_relationship = models.FollowingRelation.objects.filter(
                 follower=self.request.user.profile)
             followings = []
+            followings.append(self.request.user.profile)
             for f in following_relationship:
                 followings.append(f.following)
             return models.Post.objects.select_related("user").filter(user__in=followings)
@@ -430,18 +431,19 @@ def updateProfile(request):
             slogan = request.POST['slogan']
             profile = request.POST['profile']
             avatar = request.FILES['avatar']
-
-            object_name = settings.S3_IMAGE_PATH + \
-                str(uuid4()) + os.path.splitext(avatar.name)[1].lower()
-            image_url = upload_file(avatar, object_name)
-
-            # Save image object
-            image_saved = models.Image.objects.create(
-                title=os.path.splitext(avatar.name)[0], url=image_url)
+            
+            if avatar:
+                object_name = settings.S3_IMAGE_PATH + \
+                    str(uuid4()) + os.path.splitext(avatar.name)[1].lower()
+                image_url = upload_file(avatar, object_name)
+                # Save image object
+                image_saved = models.Image.objects.create(
+                    title=os.path.splitext(avatar.name)[0], url=image_url)
+                request.user.profile.avatar_image = image_saved
 
             request.user.profile.slogan = slogan
             request.user.profile.profile = profile
-            request.user.profile.avatar_image = image_saved
+           
             request.user.profile.save()
 
             data = {"message": "success"}

@@ -32,16 +32,14 @@ def send_confirmation_email(sender, instance, created, **kwargs):
     if created:
 
         admin = User.objects.first()
-        message = f"Hi, {
-            admin.username}! A new destination '{instance.title}' added by {instance.user.user.username}, please review it."
+        message = f"Hi, {admin.username}! A new destination '{instance.title}' added by {instance.user.user.username}, please review it."
 
         # publish message to sns
         sns = boto3.client('sns')
         response = sns.publish(
             TopicArn=settings.SNS_TOPIC_ARN,
             Message=message,
-            Subject=f"A new destination '{
-                instance.title}' added, please review",
+            Subject=f"A new destination '{instance.title}' added, please review",
             MessageAttributes={
                 'email': {
                     'DataType': 'String',

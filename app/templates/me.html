@@ -2,26 +2,12 @@
 {% block main %}
     <div class="container">
         <div class="card" style="border: none; border-radius: 0%">
-            {% if user.is_authenticated %}
+            {% if user.is_authenticated and user.id == me.id %}
             <div class="text-end m-2 p-2">
-                <button class="btn btn-secondary btn-info p-0 ps-2 pe-2" data-bs-toggle="modal" data-bs-target="#exampleModal" >Edit Profile</button>
+                <button class="btn btn-secondary btn-light p-0 ps-2 pe-2" data-bs-toggle="modal" data-bs-target="#exampleModal" >Edit Profile</button>
             </div>
             {% endif %}
-            <div class="text-center mt-3">
-                {% if me.id not in following_list %}
-                <button class="btn btn-secondary btn-small"
-                onclick="follow({{ me.id }})"
-                style="height:25px;
-                        padding-top:1px;
-                        padding-bottom:1px">Follow</button>
-                {% elif me.id in following_list %}
-                <button class="btn btn-secondary btn-small"
-                    onclick="unfollow({{ me.id }})"
-                    style="height:25px;
-                        padding-top:1px;
-                        padding-bottom:1px">Unfollow</button>
-                {% endif %}
-            </div>
+            
             <div class="mt-1 mb-5 text-center">
                 {% if me.profile.avatar_image.url %}
                     <img src="{{ me.profile.avatar_image.url }}"
@@ -41,11 +27,26 @@
                     </svg>
                 {% endif %}
                 <h1 class="mt-2">{{ me.username }}</h1>
+                <div class="text-center mt-3">
+                {% if me.id not in following_list %}
+                <button class="btn btn-secondary btn-small p-0 ps-2 pe-2"
+                onclick="follow({{ me.id }})"
+                style="height:25px;
+                        padding-top:1px;
+                        padding-bottom:1px">Follow</button>
+                {% elif me.id in following_list %}
+                <button class="btn btn-secondary btn-small ps-2 pe-2"
+                    onclick="unfollow({{ me.id }})"
+                    style="height:25px;
+                        padding-top:1px;
+                        padding-bottom:1px">Unfollow</button>
+                {% endif %}
+            </div>
                 <div class="mt-3" style="color:#444444; font-size: 14px;">{{ me.profile.slogan }}</div>
                 <div class="mt-3">
                     <span>I'm interested in:</span>
                     {% for preference in me.profile.preferences.all %}
-                    <span class="badge text-bg-secondary">{{preference.prefered_destination_type}}</span>
+                    <span class="badge text-bg-warning">{{preference.prefered_destination_type}}</span>
                     {% endfor %}
                 </div>
             </div>
@@ -218,11 +219,11 @@
             
                     <input type="file" class="form-control mb-3" name="avatar" id="avatar" placeholder="Avatar">
                     <div class="form-floating mb-3">
-                        <input type="text" class="form-control" name="slogan" id="slogan" placeholder="Slogan">
+                        <input type="text" class="form-control" value="{{user.profile.slogan}}" name="slogan" id="slogan" placeholder="Slogan">
                         <label for="slogan">Slogan</label>
                     </div>
                     <div class="form-floating">
-                        <textarea type="text" class="form-control" name="profile" rows="3" id="profile" placeholder="Profile"></textarea>
+                        <textarea type="text" class="form-control" name="profile" rows="3" id="profile" placeholder="Profile">{{user.profile.profile}}</textarea>
                         <label for="profile">Profile</label>
                     </div>
                 
