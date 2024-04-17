@@ -28,18 +28,20 @@
                 {% endif %}
                 <h1 class="mt-2">{{ me.username }}</h1>
                 <div class="text-center mt-3">
-                {% if me.id not in following_list %}
-                <button class="btn btn-secondary btn-small p-0 ps-2 pe-2"
-                onclick="follow({{ me.id }})"
-                style="height:25px;
-                        padding-top:1px;
-                        padding-bottom:1px">Follow</button>
-                {% elif me.id in following_list %}
-                <button class="btn btn-secondary btn-small ps-2 pe-2"
-                    onclick="unfollow({{ me.id }})"
+                {% if me.id != user.id %}
+                    {% if me.id not in following_list %}
+                    <button class="btn btn-secondary btn-small p-0 ps-2 pe-2"
+                    onclick="follow({{ me.id }})"
                     style="height:25px;
-                        padding-top:1px;
-                        padding-bottom:1px">Unfollow</button>
+                            padding-top:1px;
+                            padding-bottom:1px">Follow</button>
+                    {% elif me.id in following_list %}
+                    <button class="btn btn-secondary btn-small ps-2 pe-2"
+                        onclick="unfollow({{ me.id }})"
+                        style="height:25px;
+                            padding-top:1px;
+                            padding-bottom:1px">Unfollow</button>
+                    {% endif %}
                 {% endif %}
             </div>
                 <div class="mt-3" style="color:#444444; font-size: 14px;">{{ me.profile.slogan }}</div>
