@@ -133,8 +133,8 @@ LOGIN_REDIRECT_URL = '/'
 
 
 # AWS s3
-# S3_BUCKET = 'elasticbeanstalk-eu-west-1-845708981828'
-S3_BUCKET = 'x22196242-travelties'
+S3_BUCKET = 'elasticbeanstalk-eu-west-1-845708981828'
+# S3_BUCKET = 'x22196242-travelties'
 S3_IMAGE_PATH = 'images/travelties/'
 
 # AWS SNS

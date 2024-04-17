@@ -16,7 +16,7 @@ from django.utils import formats
 from django.db.models import Count
 from botocore.exceptions import ClientError
 
-from .utils import upload_file
+from s3uploader_pilais.s3uploader import upload_file
 from . import models
 from . import forms
 from . import filters
