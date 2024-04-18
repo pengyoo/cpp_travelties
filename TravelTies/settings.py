@@ -25,9 +25,10 @@ SECRET_KEY = 'django-insecure-q^!xggq!kewe-&@(v(tu615xlrrq_w@l@3whscd2_lt%89-6xd
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['8c78a1eeab3d4c5da369d7d03d64fa41.vfs.cloud9.eu-west-1.amazonaws.com', 'x22196242-traveltie-env.eba-xmbmufqa.us-west-2.elasticbeanstalk.com']
-CSRF_TRUSTED_ORIGINS = ['https://8c78a1eeab3d4c5da369d7d03d64fa41.vfs.cloud9.eu-west-1.amazonaws.com', 'https://x22196242-traveltie-env.eba-xmbmufqa.us-west-2.elasticbeanstalk.com']
-
+ALLOWED_HOSTS = ['8c78a1eeab3d4c5da369d7d03d64fa41.vfs.cloud9.eu-west-1.amazonaws.com',
+                 'x22196242-traveltie-env.eba-xmbmufqa.us-west-2.elasticbeanstalk.com', '127.0.0.1']
+CSRF_TRUSTED_ORIGINS = ['https://8c78a1eeab3d4c5da369d7d03d64fa41.vfs.cloud9.eu-west-1.amazonaws.com',
+                        'https://x22196242-traveltie-env.eba-xmbmufqa.us-west-2.elasticbeanstalk.com']
 
 
 # Application definition
@@ -132,8 +133,8 @@ LOGIN_REDIRECT_URL = '/'
 
 
 # AWS s3
-# S3_BUCKET = 'elasticbeanstalk-eu-west-1-845708981828'
-S3_BUCKET = 'x22196242-travelties'
+S3_BUCKET = 'elasticbeanstalk-eu-west-1-845708981828'
+# S3_BUCKET = 'x22196242-travelties'
 S3_IMAGE_PATH = 'images/travelties/'
 
 # AWS SNS

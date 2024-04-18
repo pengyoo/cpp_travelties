@@ -1,4 +1,5 @@
 import os
+import logging
 from datetime import datetime
 from uuid import uuid4
 from django.db import IntegrityError
@@ -13,8 +14,9 @@ from django.http import JsonResponse
 from django.conf import settings
 from django.utils import formats
 from django.db.models import Count
+from botocore.exceptions import ClientError
 
-from .utils import upload_file
+from s3uploader_pilais.s3uploader import upload_file
 from . import models
 from . import forms
 from . import filters
@@ -77,7 +79,8 @@ class HomeView(ListView):
                 type__in=preference_list)[:10]
 
         # who to follow
-        context['who_to_follow'] = models.UserProfile.objects.all().order_by("-id")[:6]
+        context['who_to_follow'] = models.UserProfile.objects.all().order_by(
+            "-id")[:6]
 
         return context
 
@@ -211,14 +214,17 @@ def ImageUploadView(request):
         image = request.FILES['image']
         object_name = settings.S3_IMAGE_PATH + \
             str(uuid4()) + os.path.splitext(image.name)[1].lower()
-        image_url = upload_file(image, object_name)
-
-        # Save image object
-        image_saved = models.Image.objects.create(
-            title=os.path.splitext(image.name)[0], url=image_url)
-
-        # Retuen json data
-        data = {"image_id": image_saved.id, "url": image_url}
+        try:
+            image_url = upload_file(image, object_name)
+            # Save image object
+            image_saved = models.Image.objects.create(
+                title=os.path.splitext(image.name)[0], url=image_url)
+            # Retuen json data
+            data = {"image_id": image_saved.id, "url": image_url}
+        except ClientError as e:
+            logging.error(e)
+            # Retuen json data
+            data = {"error": e}
 
         return JsonResponse(data)
     else:
@@ -431,19 +437,22 @@ def updateProfile(request):
             slogan = request.POST['slogan']
             profile = request.POST['profile']
             avatar = request.FILES['avatar']
-            
+
             if avatar:
                 object_name = settings.S3_IMAGE_PATH + \
                     str(uuid4()) + os.path.splitext(avatar.name)[1].lower()
-                image_url = upload_file(avatar, object_name)
-                # Save image object
-                image_saved = models.Image.objects.create(
-                    title=os.path.splitext(avatar.name)[0], url=image_url)
-                request.user.profile.avatar_image = image_saved
+                try:
+                    image_url = upload_file(avatar, object_name)
+                    # Save image object
+                    image_saved = models.Image.objects.create(
+                        title=os.path.splitext(avatar.name)[0], url=image_url)
+                    request.user.profile.avatar_image = image_saved
+                except ClientError as e:
+                    logging.error(e)
 
             request.user.profile.slogan = slogan
             request.user.profile.profile = profile
-           
+
             request.user.profile.save()
 
             data = {"message": "success"}

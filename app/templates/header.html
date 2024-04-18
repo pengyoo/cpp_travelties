@@ -48,9 +48,10 @@
                         {% if user.profile.avatar_image.url %}
                             <img src="{{ user.profile.avatar_image.url }}"
                                  alt="mdo"
+                                 
                                  width="32"
                                  height="32"
-                                 class="rounded-circle" />
+                                 class="rounded-circle object-fit-cover" />
                         {% elif not user.profile.avatar_image.url %}
                             <svg xmlns="http://www.w3.org/2000/svg"
                                  width="32"
