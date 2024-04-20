@@ -138,5 +138,6 @@ S3_BUCKET = 'x22196242-travelties'
 S3_IMAGE_PATH = 'images/travelties/'
 
 # AWS SNS
-SNS_TOPIC_ARN = 'arn:aws:sns:eu-west-1:250738637992:x22196242-travelties'
+SNS_TOPIC_ARN = 'arn:aws:sns:us-west-2:250738637992:x22196242-travelties'
+# SNS_TOPIC_ARN = 'arn:aws:sns:eu-west-1:250738637992:x22196242-travelties'
 # SNS_TOPIC_ARN = 'arn:aws:sns:eu-west-1:845708981828:travelties'
