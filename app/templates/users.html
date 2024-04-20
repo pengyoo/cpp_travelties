@@ -10,7 +10,7 @@
                             <div class="card" style="border: none; border-radius: 0%; min-height:240px;">
                                 <div class="mt-3 mb-3 text-center">
                                   
-                                  <a class="nav-link" href="{% url 'me' user.id %}">
+                                  <a class="nav-link" href="{% url 'me' u.id %}">
                                     {% if u.avatar_image.url %}
                                       <img src="{{ u.avatar_image.url }}"
                                           alt="mdo"
