@@ -32,7 +32,7 @@ def send_confirmation_email(sender, instance, created, **kwargs):
     if created:
 
         admin = User.objects.first()
-        message = f"Hi, {admin.username}! A new destination '{instance.title}' added by {instance.user.user.username}, please review it."
+        message = f"Hi, {admin.username}! A new destination {instance.title} added by {instance.user.user.username}, please review it. link: http://x22196242-traveltie-env.eba-xmbmufqa.us-west-2.elasticbeanstalk.com/destinations/{instance.id}"
 
         # publish message to sns
         sns = boto3.client('sns', 'us-west-2')
