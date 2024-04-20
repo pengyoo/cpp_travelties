@@ -35,7 +35,7 @@ def send_confirmation_email(sender, instance, created, **kwargs):
         message = f"Hi, {admin.username}! A new destination '{instance.title}' added by {instance.user.user.username}, please review it."
 
         # publish message to sns
-        sns = boto3.client('sns', 'us-west-2')
+        sns = boto3.client('sns', 'eu-west-1')
         response = sns.publish(
             TopicArn=settings.SNS_TOPIC_ARN,
             Message=message,
