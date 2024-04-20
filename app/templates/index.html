@@ -22,10 +22,9 @@
           {% if user.profile.avatar_image.url %}
             <img src="{{ user.profile.avatar_image.url }}"
                  alt="mdo"
-                 class="object-fit-cover"
                  width="35"
                  height="35"
-                 class="rounded-circle" />
+                 class="rounded-circle object-fit-cover" />
           {% elif not user.profile.avatar_image.url %}
             <svg xmlns="http://www.w3.org/2000/svg"
                  width="35"
@@ -64,10 +63,9 @@
             {% if post.user.avatar_image.url %}
               <img src="{{ post.user.avatar_image.url }}"
                    alt="mdo"
-                   class="object-fit-cover"
                    width="50"
                    height="50"
-                   class="rounded-circle" />
+                   class="rounded-circle object-fit-cover" />
             {% elif not post.user.avatar_image.url %}
               <svg xmlns="http://www.w3.org/2000/svg"
                    width="50"
@@ -167,7 +165,7 @@
                        alt="mdo"
                        width="35"
                        height="35"
-                       class="rounded-circle" />
+                       class="rounded-circle object-fit-cover" />
                 {% elif not user.profile.avatar_image.url %}
                   <svg xmlns="http://www.w3.org/2000/svg"
                        width="35"
@@ -195,9 +193,10 @@
                     {% if comment.user.avatar_image.url %}
                       <img src="{{ post.user.avatar_image.url }}"
                            alt="mdo"
+                           
                            width="35"
                            height="35"
-                           class="rounded-circle" />
+                           class="rounded-circle object-fit-cover" />
                     {% elif not comment.user.avatar_image.url %}
                       <svg xmlns="http://www.w3.org/2000/svg"
                            width="35"
