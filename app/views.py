@@ -442,6 +442,7 @@ def updateProfile(request):
                 object_name = settings.S3_IMAGE_PATH + \
                     str(uuid4()) + os.path.splitext(avatar.name)[1].lower()
                 try:
+                    # upload avatar image to S3
                     image_url = upload_file(avatar, object_name)
                     # Save image object
                     image_saved = models.Image.objects.create(
@@ -450,11 +451,12 @@ def updateProfile(request):
                 except ClientError as e:
                     logging.error(e)
 
+            # update profile
             request.user.profile.slogan = slogan
             request.user.profile.profile = profile
-
             request.user.profile.save()
-
+            
+            # response json to client
             data = {"message": "success"}
             return JsonResponse(data)
     else:
